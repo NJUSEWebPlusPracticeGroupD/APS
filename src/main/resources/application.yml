@@ -60,12 +60,14 @@ spring:
 aps:
   # 是否异步记录用户操作日志
   openAopLog: true
+  # Swagger文档路径
+  docsPath: /docs
   # Swagger相关配置
   swagger:
     title: APS Backend API
     description: APS Backend API Documentation. If interested or confused, you can find out more about us at [github](https://github.com/NJUSEWebPlusPracticeGroupD)
     version: 1.0.0
-    author: njuse-group-d
+    author: njuse-group-D
     url: https://software.nju.edu.cn/
 
 springdoc:

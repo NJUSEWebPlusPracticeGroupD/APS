@@ -18,5 +18,7 @@ public class ApsProperties {
 
     private boolean openAopLog = true;
 
+    private String docsPath = "/api-docs";
+
     private SwaggerProperties swagger = new SwaggerProperties();
 }

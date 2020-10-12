@@ -7,18 +7,23 @@ import io.swagger.v3.oas.models.ExternalDocumentation;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
-import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springdoc.core.GroupedOpenApi;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import static org.springdoc.core.Constants.SWAGGER_UI_PATH;
+import static org.springframework.util.AntPathMatcher.DEFAULT_PATH_SEPARATOR;
+import static org.springframework.web.servlet.view.UrlBasedViewResolver.REDIRECT_URL_PREFIX;
 
 /**
  * @author Rollingegg
  * @create_time 10/12/2020 4:52 PM
+ * 配置swagger
  */
 @Configuration
 public class ApsConfig implements WebMvcConfigurer {
@@ -54,4 +59,18 @@ public class ApsConfig implements WebMvcConfigurer {
                         .url("https://springdoc.org/")
                 );
     }
+
+
+    @Value(SWAGGER_UI_PATH)
+    private String swaggerUiPath;
+
+    /**
+     * 将swagger-ui重定向到指定路径
+     * @param registry
+     */
+    @Override
+    public void addViewControllers(ViewControllerRegistry registry) {
+        registry.addRedirectViewController(apsProperties.getDocsPath(),swaggerUiPath);
+    }
+
 }

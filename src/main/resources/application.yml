@@ -122,3 +122,11 @@ server:
   port: 5200
   http2:
     enabled: true
+logging:
+  level:
+    org:
+      optaplanner: info
+optaplanner:
+  solver:
+    termination:
+      spent-limit: 5s

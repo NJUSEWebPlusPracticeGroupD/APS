@@ -37,3 +37,6 @@ src/main/resources/templates/
 
 ### log ###
 *.log
+
+### apple ###
+.DS_Store

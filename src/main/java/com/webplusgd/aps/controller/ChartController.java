@@ -11,6 +11,7 @@ import java.util.Date;
 @RestController
 @RequestMapping("/chart")
 public class ChartController {
+
     @RequestMapping(value = "/getResourceGanttChart", method = RequestMethod.GET)
     public ResponseVO getResourceGanttChart(@RequestParam Date date){
         return null;

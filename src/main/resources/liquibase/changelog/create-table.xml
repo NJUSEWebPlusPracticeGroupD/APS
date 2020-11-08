@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="20201108-01" author="rollingegg">
+        <createTable tableName="order">
+            <column name="material_id" type="int" remarks="物料id">
+                <constraints nullable="false" foreignKeyName="material(id)"/>
+            </column>
+            <column name="order_count" type="bigint" remarks="订单要求生产数量">
+                <constraints nullable="false"/>
+            </column>
+            <column name="delivery_date" type="date" remarks="订单交付日期">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: "@profileActive@"
+    active: cc
   liquibase:
     change-log: classpath:liquibase/master.xml
     enabled: true
@@ -117,8 +117,24 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/apsdb?characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&rewriteBatchedStatements=true&allowMultiQueries=true
     username: root
-    password: LWJsteve98
+    password: 981209880522Ff
 server:
   port: 5200
+  http2:
+    enabled: true
+
+---
+spring:
+  profiles: cc
+  devtools:
+    add-properties: true
+  datasource:
+    type: com.mysql.cj.jdbc.MysqlDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/apsdb?characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&rewriteBatchedStatements=true&allowMultiQueries=true
+    username: root
+    password: 981209880522Ff
+server:
+  port: 8000
   http2:
     enabled: true

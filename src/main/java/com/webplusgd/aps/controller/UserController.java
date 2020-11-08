@@ -27,4 +27,10 @@ public class UserController implements UserApi {
         user.setPassword("123456");
         return ResponseEntity.of(Optional.of(user));
     }
+
+    @RequestMapping("/test")
+    public String testMethod(){
+        System.out.println("backend test success!");
+        return "frontend test success!";
+    }
 }

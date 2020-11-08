@@ -1,16 +1,25 @@
 package com.webplusgd.aps.model;
 
-import java.util.List;
+import org.springframework.stereotype.Component;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import java.util.List;
+@Entity
+@Table(name = "resource")
 public class Resource {
 
+    @Id
+    @Column(name="resource_id")
     private Integer id;
-
+    @Column(name="resource_type")
     private String type;
-
+    @Column(name="resource_count")
     private Integer count;
 
-    private List<Material> materials;
+
 
     public Integer getId() {
         return id;
@@ -36,12 +45,5 @@ public class Resource {
         this.count = count;
     }
 
-    public List<Material> getMaterials() {
-        return materials;
-    }
-
-    public void setMaterials(List<Material> materials) {
-        this.materials = materials;
-    }
 
 }

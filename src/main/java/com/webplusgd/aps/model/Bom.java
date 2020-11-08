@@ -1,17 +1,28 @@
 package com.webplusgd.aps.model;
 
+import javax.persistence.*;
+
+@Entity
+@Table(name = "bom")
 public class Bom {
 
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @Column(name="material_id")
     private Integer materialId;
 
+    @Column(name="standard_capacity")
     private Integer capacity;
-
+    @Column(name="resource_type")
     private Integer resourceType;
-
+    @Column(name="resource_id")
     private Integer resourceId;
-
+    @Column(name="quota")
     private Integer quota;
-
+    @Column(name="craft")
     private String craft;
 
     public Integer getMaterialId() {
@@ -20,6 +31,14 @@ public class Bom {
 
     public void setMaterialId(Integer materialId) {
         this.materialId = materialId;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public Integer getCapacity() {

@@ -1,6 +1,6 @@
-package com.webplusgd.aps.optaplanner.domain.resource;
+package optaplanner.domain.resource;
 
-import com.webplusgd.aps.optaplanner.domain.Shift;
+import optaplanner.domain.Shift;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

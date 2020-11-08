@@ -1,4 +1,4 @@
-package com.webplusgd.aps.optaplanner.domain;
+package optaplanner.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

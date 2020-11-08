@@ -29,7 +29,7 @@ material_id` int NULL DEFAULT NULL,
 standard_capacity` int NULL DEFAULT NULL,
   `
 resource_type` int NULL DEFAULT NULL,
-  `recource_id` int NULL DEFAULT NULL,
+  `resource_id` int NULL DEFAULT NULL,
   `quota` int NULL DEFAULT NULL,
   `craft` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE

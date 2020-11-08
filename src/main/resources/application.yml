@@ -1,7 +1,6 @@
 spring:
   profiles:
-    active: toby
-  #    active: "@profileActive@"
+      active: "@profileActive@"
   liquibase:
     change-log: classpath:liquibase/master.xml
     enabled: true
@@ -86,6 +85,16 @@ springdoc:
   - group: users
     packages-to-scan: com.webplusgd.aps
 
+logging:
+  level:
+    org:
+      optaplanner: info
+optaplanner:
+  solver:
+    termination:
+      spent-limit: 5s
+  solver-config-xml: optaplanner/timetable/TimeTableScoreConfig.xml
+
 ---
 spring:
   profiles: prod
@@ -139,12 +148,3 @@ server:
   port: 5200
   http2:
     enabled: true
-
-logging:
-  level:
-    org:
-      optaplanner: info
-optaplanner:
-  solver:
-    termination:
-      spent-limit: 5s

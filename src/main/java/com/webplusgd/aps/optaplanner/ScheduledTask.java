@@ -1,8 +1,8 @@
 package com.webplusgd.aps.optaplanner;
 
-import com.webplusgd.aps.optaplanner.domain.Order;
-import com.webplusgd.aps.optaplanner.domain.Timeslot;
-import com.webplusgd.aps.optaplanner.domain.resource.Resource;
+import optaplanner.domain.Order;
+import optaplanner.domain.Timeslot;
+import optaplanner.domain.resource.Resource;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

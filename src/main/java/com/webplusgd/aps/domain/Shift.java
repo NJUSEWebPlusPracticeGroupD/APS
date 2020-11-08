@@ -1,5 +1,6 @@
 package com.webplusgd.aps.domain;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -10,13 +11,14 @@ import javax.persistence.Table;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "shift")
 public class Shift {
 
     @Id
     @Column(name = "shift_code")
-    private String shiftCode;
+    private Integer shiftCode;
     @Column(name = "shift_name")
     private String shiftName;
     @Column(name = "start_time")

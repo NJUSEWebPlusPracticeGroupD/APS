@@ -1,7 +1,7 @@
-package com.webplusgd.aps.optaplanner.domain;
+package optaplanner.domain;
 
-import com.webplusgd.aps.optaplanner.domain.resource.GroupResource;
-import com.webplusgd.aps.optaplanner.domain.resource.MachineResource;
+import optaplanner.domain.resource.GroupResource;
+import optaplanner.domain.resource.MachineResource;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,10 +21,10 @@ public class Task {
     @PlanningVariable(valueRangeProviderRefs = "orderRange")
     private Order order;
 
-    @PlanningVariable(valueRangeProviderRefs = "groupResourceRange")
+    @PlanningVariable(valueRangeProviderRefs = "groupRange")
     private GroupResource groupResource;
 
-    @PlanningVariable(valueRangeProviderRefs = "machineResourceRange")
+    @PlanningVariable(valueRangeProviderRefs = "machineRange")
     private MachineResource machineResource;
 
     @PlanningVariable(valueRangeProviderRefs = "timeslotRange")

@@ -1,10 +1,10 @@
-package com.webplusgd.aps.optaplanner;
+package optaplanner;
 
-import com.webplusgd.aps.optaplanner.domain.Order;
-import com.webplusgd.aps.optaplanner.domain.Task;
-import com.webplusgd.aps.optaplanner.domain.Timeslot;
-import com.webplusgd.aps.optaplanner.domain.resource.GroupResource;
-import com.webplusgd.aps.optaplanner.domain.resource.MachineResource;
+import optaplanner.domain.Order;
+import optaplanner.domain.Task;
+import optaplanner.domain.Timeslot;
+import optaplanner.domain.resource.GroupResource;
+import optaplanner.domain.resource.MachineResource;
 import org.optaplanner.core.api.domain.solution.PlanningEntityCollectionProperty;
 import org.optaplanner.core.api.domain.solution.PlanningScore;
 import org.optaplanner.core.api.domain.solution.PlanningSolution;

@@ -1,6 +1,6 @@
-package com.webplusgd.aps.optaplanner.solver.score;
+package optaplanner.solver.score;
 
-import com.webplusgd.aps.optaplanner.domain.Task;
+import optaplanner.domain.Task;
 import org.optaplanner.core.api.score.buildin.bendable.BendableScore;
 import org.optaplanner.core.api.score.stream.Constraint;
 import org.optaplanner.core.api.score.stream.ConstraintFactory;

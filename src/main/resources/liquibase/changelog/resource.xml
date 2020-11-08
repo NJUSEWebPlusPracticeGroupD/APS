@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="resource-01" author="rollingegg">
+        <createTable tableName="resource" remarks="资源表">
+            <column name="resource_id" type="int" remarks="id" encoding="utf8">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="resource_count" type="int" remarks="资源数量" defaultValue="1">
+                <constraints nullable="false"/>
+            </column>
+            <column name="resource_type" type="varchar" remarks="资源类型(工作中心、资源组、资源)" encoding="utf8" defaultValue="资源">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

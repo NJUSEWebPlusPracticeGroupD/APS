@@ -3,20 +3,20 @@ package com.webplusgd.aps.model;
 import java.util.Date;
 import java.util.List;
 
-public class ResourceLoadForm {
+public class ResourceLoadChart {
     private double totalEquipmentLoadRate;
     private double totalPersonnelLoadRate;
     private Date startDate;
     private List<ResourceLoadItem> resourceLoadItems;
 
-    public ResourceLoadForm(double totalEquipmentLoadRate, double totalPersonnelLoadRate, Date startDate, List<ResourceLoadItem> resourceLoadItems) {
+    public ResourceLoadChart(double totalEquipmentLoadRate, double totalPersonnelLoadRate, Date startDate, List<ResourceLoadItem> resourceLoadItems) {
         this.totalEquipmentLoadRate = totalEquipmentLoadRate;
         this.totalPersonnelLoadRate = totalPersonnelLoadRate;
         this.startDate = startDate;
         this.resourceLoadItems = resourceLoadItems;
     }
 
-    public ResourceLoadForm(){}
+    public ResourceLoadChart(){}
 
     public List<ResourceLoadItem> getResourceLoadItems() {
         return resourceLoadItems;

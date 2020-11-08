@@ -8,9 +8,9 @@ public class ResourceLoadItem {
 
     private String name;
 
-    private List<Integer> rates;
+    private List<Double> rates;
 
-    public ResourceLoadItem(Date date, String name, List<Integer> rates) {
+    public ResourceLoadItem(Date date, String name, List<Double> rates) {
         this.date = date;
         this.name = name;
         this.rates = rates;
@@ -35,11 +35,11 @@ public class ResourceLoadItem {
         this.name = name;
     }
 
-    public List<Integer> getRates() {
+    public List<Double> getRates() {
         return rates;
     }
 
-    public void setRates(List<Integer> rates) {
+    public void setRates(List<Double> rates) {
         this.rates = rates;
     }
 }

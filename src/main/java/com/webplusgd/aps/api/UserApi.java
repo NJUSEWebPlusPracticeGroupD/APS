@@ -1,6 +1,6 @@
 package com.webplusgd.aps.api;
 
-import com.webplusgd.aps.model.User;
+import com.webplusgd.aps.domain.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;

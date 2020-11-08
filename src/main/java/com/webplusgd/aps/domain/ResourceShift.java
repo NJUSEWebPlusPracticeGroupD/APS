@@ -1,4 +1,4 @@
-package com.webplusgd.aps.model;
+package com.webplusgd.aps.domain;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

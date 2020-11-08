@@ -1,9 +1,9 @@
 package com.webplusgd.aps.controller;
 
-import com.webplusgd.aps.model.OrderGanttItem;
-import com.webplusgd.aps.model.ResourceGanttItem;
-import com.webplusgd.aps.model.ResourceLoadChart;
-import com.webplusgd.aps.model.ResponseVO;
+import com.webplusgd.aps.vo.OrderGanttItem;
+import com.webplusgd.aps.vo.ResourceGanttItem;
+import com.webplusgd.aps.vo.ResourceLoadChart;
+import com.webplusgd.aps.vo.ResponseVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;

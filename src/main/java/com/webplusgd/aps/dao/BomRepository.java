@@ -1,6 +1,6 @@
 package com.webplusgd.aps.dao;
 
-import com.webplusgd.aps.model.Bom;
+import com.webplusgd.aps.domain.Bom;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

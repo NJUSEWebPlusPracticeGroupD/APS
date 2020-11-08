@@ -1,4 +1,4 @@
-package com.webplusgd.aps.model;
+package com.webplusgd.aps.vo;
 
 public class ResponseVO {
     private boolean success;

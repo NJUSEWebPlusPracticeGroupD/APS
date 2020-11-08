@@ -2,7 +2,7 @@ package com.webplusgd.aps.controller;
 
 import com.webplusgd.aps.annotation.Log;
 import com.webplusgd.aps.api.UserApi;
-import com.webplusgd.aps.model.User;
+import com.webplusgd.aps.domain.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

@@ -1,6 +1,6 @@
 package com.webplusgd.aps.dao;
 
-import com.webplusgd.aps.model.ResourceShift;
+import com.webplusgd.aps.domain.ResourceShift;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

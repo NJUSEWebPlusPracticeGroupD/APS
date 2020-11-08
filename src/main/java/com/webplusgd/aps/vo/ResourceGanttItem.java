@@ -1,4 +1,4 @@
-package com.webplusgd.aps.model;
+package com.webplusgd.aps.vo;
 
 import java.util.Date;
 

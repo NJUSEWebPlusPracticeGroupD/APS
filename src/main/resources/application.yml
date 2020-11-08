@@ -1,6 +1,7 @@
 spring:
   profiles:
-    active: "@profileActive@"
+    active: toby
+  #    active: "@profileActive@"
   liquibase:
     change-log: classpath:liquibase/master.xml
     enabled: true
@@ -130,3 +131,19 @@ optaplanner:
   solver:
     termination:
       spent-limit: 5s
+
+---
+spring:
+  profiles: toby
+  devtools:
+    add-properties: true
+  datasource:
+    type: com.mysql.cj.jdbc.MysqlDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/apsdb?characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&rewriteBatchedStatements=true&allowMultiQueries=true
+    username: root
+    password: 123456
+server:
+  port: 5200
+  http2:
+    enabled: true

@@ -17,8 +17,6 @@ import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import static org.springdoc.core.Constants.SWAGGER_UI_PATH;
-import static org.springframework.util.AntPathMatcher.DEFAULT_PATH_SEPARATOR;
-import static org.springframework.web.servlet.view.UrlBasedViewResolver.REDIRECT_URL_PREFIX;
 
 /**
  * @author Rollingegg
@@ -66,11 +64,12 @@ public class ApsConfig implements WebMvcConfigurer {
 
     /**
      * 将swagger-ui重定向到指定路径
+     *
      * @param registry
      */
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addRedirectViewController(apsProperties.getDocsPath(),swaggerUiPath);
+        registry.addRedirectViewController(apsProperties.getDocsPath(), swaggerUiPath);
     }
 
 }

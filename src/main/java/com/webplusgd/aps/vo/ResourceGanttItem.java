@@ -1,63 +1,31 @@
 package com.webplusgd.aps.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.util.Date;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class ResourceGanttItem {
+    @Schema(description = "资源名", example = "line1")
     private String name;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    @Schema(example = "2018-10-01 08:00", description = "时间段开始时间")
     private Date fromDate;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    @Schema(example = "2018-10-01 10:00", description = "时间段结束时间")
     private Date toDate;
+
+    @Schema(example = "418477", description = "订单id")
     private String task;
+    @Schema(example = "true", description = "订单是否延期")
     private boolean delay;
-
-    public ResourceGanttItem(){}
-
-    public ResourceGanttItem(String name, Date fromDate, Date toDate, String task, boolean delay) {
-        this.name = name;
-        this.fromDate = fromDate;
-        this.toDate = toDate;
-        this.task = task;
-        this.delay = delay;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Date getFromDate() {
-        return fromDate;
-    }
-
-    public void setFromDate(Date fromDate) {
-        this.fromDate = fromDate;
-    }
-
-    public Date getToDate() {
-        return toDate;
-    }
-
-    public void setToDate(Date toDate) {
-        this.toDate = toDate;
-    }
-
-    public String getTask() {
-        return task;
-    }
-
-    public void setTask(String task) {
-        this.task = task;
-    }
-
-    public boolean isDelay() {
-        return delay;
-    }
-
-    public void setDelay(boolean delay) {
-        this.delay = delay;
-    }
 
 }

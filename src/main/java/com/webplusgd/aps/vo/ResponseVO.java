@@ -1,53 +1,38 @@
 package com.webplusgd.aps.vo;
 
-public class ResponseVO {
-    private boolean success;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import javax.validation.constraints.NotNull;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class ResponseVO<T> {
+    @Schema(description = "是否成功")
+    private Boolean success;
+    @Schema(description = "返回信息")
     private String message;
-    private Object content;
+    @Schema(description = "返回数据")
+    private T content;
 
-
-    public boolean isSuccess() {
-        return success;
+    public static <T> ResponseVO<T> buildSuccess() {
+        return new ResponseVO<T>(true,"success");
     }
 
-    public void setSuccess(boolean success) {
-        this.success = success;
+    public static <T> ResponseVO<T> buildSuccess(@NotNull T content) {
+        return new ResponseVO<T>(true,"success",content);
+
     }
 
-    public String getMessage() {
-        return message;
+    public static <T> ResponseVO buildFailure(String message) {
+        return new ResponseVO(false,message);
     }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public Object getContent() {
-        return content;
-    }
-
-    public void setContent(Object content) {
-        this.content = content;
-    }
-
-
-    public static ResponseVO buildSuccess() {
-        ResponseVO response = new ResponseVO();
-        response.setSuccess(true);
-        return response;
-    }
-
-    public static ResponseVO buildSuccess(Object content) {
-        ResponseVO response = new ResponseVO();
-        response.setContent(content);
-        response.setSuccess(true);
-        return response;
-    }
-
-    public static ResponseVO buildFailure(String message) {
-        ResponseVO response = new ResponseVO();
-        response.setSuccess(false);
-        response.setMessage(message);
-        return response;
+    public ResponseVO(boolean status,String mes){
+        this.success=status;
+        this.message=mes;
     }
 }

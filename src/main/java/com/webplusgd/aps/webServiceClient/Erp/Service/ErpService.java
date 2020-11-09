@@ -24,13 +24,13 @@ public class ErpService
 
     private final static URL ERPSERVICE_WSDL_LOCATION;
     private final static WebServiceException ERPSERVICE_EXCEPTION;
-    private final static QName ERPSERVICE_QNAME = new QName("http://www.oldSystem.com/wsdl", "ErpService");
+    private final static QName ERPSERVICE_QNAME = new QName("http://www.oldSystem.com/wsdl", "ErpPortImplService");
 
     static {
         URL url = null;
         WebServiceException e = null;
         try {
-            url = new URL("file:/D:/oceania-iter2/webclientTest/xml/wsdl/ErpSystem.wsdl");
+            url = new URL("http://localhost:8088/ws/erp" + "?wsdl");
         } catch (MalformedURLException ex) {
             e = new WebServiceException(ex);
         }
@@ -69,7 +69,7 @@ public class ErpService
      */
     @WebEndpoint(name = "ErpPort")
     public ErpPort getErpPort() {
-        return super.getPort(new QName("http://www.oldSystem.com/wsdl", "ErpPort"), ErpPort.class);
+        return super.getPort(new QName("http://www.oldSystem.com/wsdl", "ErpPortPort"), ErpPort.class);
     }
 
     /**
@@ -81,7 +81,7 @@ public class ErpService
      */
     @WebEndpoint(name = "ErpPort")
     public ErpPort getErpPort(WebServiceFeature... features) {
-        return super.getPort(new QName("http://www.oldSystem.com/wsdl", "ErpPort"), ErpPort.class, features);
+        return super.getPort(new QName("http://www.oldSystem.com/wsdl", "ErpPortPort"), ErpPort.class, features);
     }
 
     private static URL __getWsdlLocation() {

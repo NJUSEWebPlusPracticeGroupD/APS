@@ -22,7 +22,7 @@ public class AttendancePortImpl {
         BindingProvider bindingProvider = (BindingProvider)attendancePort;
         bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY,"http://localhost:8088/ws/attendance" + "?wsdl" );
 
-        GroupScheduleInformationList res = attendancePort.getAllGroupSchedules("getAllGroupSchedules");
+        GroupScheduleInformationList res = attendancePort.getAllGroupSchedules("getAllGroupSchedulesParam");
 
         return res;
     }

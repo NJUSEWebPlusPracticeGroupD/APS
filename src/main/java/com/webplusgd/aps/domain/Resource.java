@@ -15,10 +15,15 @@ public class Resource {
 
     @Id
     @Column(name="resource_id")
-    private Integer id;
+    private String id;
     @Column(name="resource_type")
     private String type;
     @Column(name="resource_count")
     private Integer count;
-
+    @Column(name = "shift_code")
+    private Integer shiftCode;
+    @Column(name = "start_day")
+    private Integer startDay;
+    @Column(name = "end_day")
+    private Integer endDay;
 }

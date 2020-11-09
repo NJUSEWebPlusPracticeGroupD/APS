@@ -82,7 +82,7 @@ springdoc:
     operationsSorter: method
   show-actuator: true
   group-configs:
-  - group: users
+  - group: Aps
     packages-to-scan: com.webplusgd.aps
 
 logging:

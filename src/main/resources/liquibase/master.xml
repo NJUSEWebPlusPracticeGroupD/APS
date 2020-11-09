@@ -5,5 +5,8 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
             http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
     <include file="changelog/changelog-20201012.xml" relativeToChangelogFile="true" />
+    <include file="changelog/bom.xml" relativeToChangelogFile="true" />
     <include file="changelog/order.xml" relativeToChangelogFile="true" />
+    <include file="changelog/resource.xml" relativeToChangelogFile="true" />
+    <include file="changelog/shift.xml" relativeToChangelogFile="true" />
 </databaseChangeLog>

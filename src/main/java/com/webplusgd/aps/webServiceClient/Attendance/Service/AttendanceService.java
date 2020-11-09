@@ -24,13 +24,13 @@ public class AttendanceService
 
     private final static URL ATTENDANCESERVICE_WSDL_LOCATION;
     private final static WebServiceException ATTENDANCESERVICE_EXCEPTION;
-    private final static QName ATTENDANCESERVICE_QNAME = new QName("http://www.oldSystem.com/wsdl", "AttendanceService");
+    private final static QName ATTENDANCESERVICE_QNAME = new QName("http://www.oldSystem.com/wsdl", "AttendancePortImplService");
 
     static {
         URL url = null;
         WebServiceException e = null;
         try {
-            url = new URL("file:/D:/oceania-iter2/webclientTest/xml/wsdl/Attendance.wsdl");
+            url = new URL("http://localhost:8088/ws/attendance?wsdl");
         } catch (MalformedURLException ex) {
             e = new WebServiceException(ex);
         }
@@ -69,7 +69,7 @@ public class AttendanceService
      */
     @WebEndpoint(name = "AttendancePort")
     public AttendancePort getAttendancePort() {
-        return super.getPort(new QName("http://www.oldSystem.com/wsdl", "AttendancePort"), AttendancePort.class);
+        return super.getPort(new QName("http://www.oldSystem.com/wsdl", "AttendancePortPort"), AttendancePort.class);
     }
 
     /**
@@ -81,7 +81,7 @@ public class AttendanceService
      */
     @WebEndpoint(name = "AttendancePort")
     public AttendancePort getAttendancePort(WebServiceFeature... features) {
-        return super.getPort(new QName("http://www.oldSystem.com/wsdl", "AttendancePort"), AttendancePort.class, features);
+        return super.getPort(new QName("http://www.oldSystem.com/wsdl", "AttendancePortPort"), AttendancePort.class, features);
     }
 
     private static URL __getWsdlLocation() {

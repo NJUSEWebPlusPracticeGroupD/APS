@@ -1,7 +1,11 @@
 package com.webplusgd.aps.webServiceClient.Order.Service;
 
 
-import com.webplusgd.aps.webServiceClient.Order.Entity.*;
+import com.webplusgd.aps.webServiceClient.Order.Entity.GetOrderByIdType;
+import com.webplusgd.aps.webServiceClient.Order.Entity.GetOrdersByItemIdType;
+import com.webplusgd.aps.webServiceClient.Order.Entity.OrderInfoType;
+import com.webplusgd.aps.webServiceClient.Order.Entity.OrderList;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;

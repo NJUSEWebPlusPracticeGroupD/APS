@@ -1,19 +1,23 @@
 package com.webplusgd.aps.aspect;
 
 
+import com.webplusgd.aps.annotation.Log;
 import com.webplusgd.aps.properties.ApsProperties;
 import com.webplusgd.aps.service.LogService;
 import com.webplusgd.aps.utils.HttpContextUtil;
 import com.webplusgd.aps.utils.IPUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.Method;
 
 /**
  * AOP 记录用户操作日志
@@ -42,6 +46,14 @@ public class LogAspect {
     @Around("pointcut()")
     public Object around(ProceedingJoinPoint point) throws Throwable {
         Object result = null;
+
+        // 获取到方法签名
+        Signature signature = point.getSignature();
+        MethodSignature methodSignature = (MethodSignature) signature;
+        Method method = methodSignature.getMethod();
+        Log aopLog = (Log) method.getAnnotation(Log.class);
+        String comment = aopLog.value();
+
         long beginTime = System.currentTimeMillis();
         // 执行方法
         result = point.proceed();
@@ -49,14 +61,13 @@ public class LogAspect {
         HttpServletRequest request = HttpContextUtil.getHttpServletRequest();
         // 获取 访问url与方法类型
         String uri = request.getRequestURI();
-        String method = request.getMethod();
+        String requestMethod = request.getMethod();
         // 设置 IP 地址
         String ip = IPUtil.getIpAddr(request);
         // 执行时长(毫秒)
         long time = System.currentTimeMillis() - beginTime;
         if (apsProperties.isOpenAopLog()) {
-            // todo 保存日志
-            log.info("IP:{} 访问 uri 为 [{}]，方法类型为 {} 的接口 用时为 {}", ip, uri, method, time);
+            log.info("【{}】IP:{} 访问 uri 为 [{}]，方法类型为 {} 的接口 用时为 {}", comment, ip, uri, requestMethod, time);
         }
         return result;
     }

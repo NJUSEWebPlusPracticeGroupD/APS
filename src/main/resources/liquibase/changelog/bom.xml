@@ -7,11 +7,11 @@
 
     <changeSet id="bom-01" author="rollingegg">
         <createTable tableName="bom" remarks="BOM表">
-            <column name="id" type="int" remarks="自增id" autoIncrement="true">
+            <column name="id" type="int" remarks="自增id" autoIncrement="true" encoding="utf8">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
             <column name="material_id" type="int" remarks="物料号码">
-                <constraints nullable="false" unique="false"/>
+                <constraints nullable="false"/>
             </column>
             <column name="resource_id" type="int" remarks="资源代码">
                 <constraints nullable="false"/>
@@ -26,9 +26,13 @@
                 <constraints nullable="false"/>
             </column>
             <column name="switching_time" type="double" remarks="资源切换时间" defaultValue="0"/>
-            <column name="craft" type="varchar" encoding="utf8" remarks="工艺所需物料代码序列">
+            <column name="craft" type="varchar(255)" encoding="utf8" remarks="工艺所需物料代码序列">
                 <constraints nullable="true"/>
             </column>
         </createTable>
+    </changeSet>
+
+    <changeSet id="bom-02" author="toby">
+        <modifyDataType tableName="bom" columnName="resource_id" newDataType="varchar(255)"/>
     </changeSet>
 </databaseChangeLog>

@@ -10,7 +10,7 @@
             <column name="shift_code" type="tinyint(1)" remarks="班次代码(0全天 1早班 2晚班 3休息)" encoding="utf8">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="shift_name" type="varchar" remarks="班次名称" encoding="utf8">
+            <column name="shift_name" type="varchar(10)" remarks="班次名称" encoding="utf8">
                 <constraints nullable="false"/>
             </column>
             <column name="start_time" type="int" remarks="开始时间(h)">

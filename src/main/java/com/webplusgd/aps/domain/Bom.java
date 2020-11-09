@@ -11,7 +11,6 @@ import javax.persistence.*;
 @Table(name = "bom")
 public class Bom {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -24,9 +23,11 @@ public class Bom {
     @Column(name="resource_type")
     private Integer resourceType;
     @Column(name="resource_id")
-    private Integer resourceId;
+    private String resourceId;
     @Column(name="quota")
     private Integer quota;
+    @Column(name = "switching_time")
+    private Double switchingTime;
     @Column(name="craft")
     private String craft;
 

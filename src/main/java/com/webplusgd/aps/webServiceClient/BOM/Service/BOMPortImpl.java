@@ -12,7 +12,7 @@ public class BOMPortImpl{
     public BOMList getAllBOMs() {
         URL url = null;
         try{
-            url = new URL("http://localhost:8088/ws/erp" + "?wsdl");
+            url = new URL("http://localhost:8088/ws/bom" + "?wsdl");
         }
         catch ( MalformedURLException e){
             System.out.println("url exception");
@@ -32,7 +32,7 @@ public class BOMPortImpl{
 
         URL url = null;
         try{
-            url = new URL("http://localhost:8088/ws/erp" + "?wsdl");
+            url = new URL("http://localhost:8088/ws/bom" + "?wsdl");
         }
         catch ( MalformedURLException e){
             System.out.println("url exception");

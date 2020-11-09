@@ -256,8 +256,8 @@ public class WSImport2DB implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
         try {
-            log.info("Web Service导入数据库中······");
-            wsImport();
+//            log.info("Web Service导入数据库中······");
+//            wsImport();
         } catch (Exception e) {
             log.error("WebService导入数据库失败, {}", e.getMessage());
             if (e instanceof WebServiceException) {

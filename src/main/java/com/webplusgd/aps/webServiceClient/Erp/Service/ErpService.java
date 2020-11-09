@@ -30,7 +30,7 @@ public class ErpService
         URL url = null;
         WebServiceException e = null;
         try {
-            url = new URL("file:/D:/oceania-iter2/webclientTest/xml/wsdl/ErpSystem.wsdl");
+            url = new URL("file:C:\\Users\\82582\\Desktop\\实践课\\gitProject\\legacySystem-WebService\\legacySystem-webService\\xml\\wsdl/ErpSystem.wsdl");
         } catch (MalformedURLException ex) {
             e = new WebServiceException(ex);
         }

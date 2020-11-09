@@ -29,7 +29,7 @@ import javax.xml.bind.annotation.*;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "OrderList", propOrder = {
-    "orderInfo"
+    "orderInfo","orderInfoTypes"
 })
 @XmlRootElement(name = "orderList")
 public class OrderList {
@@ -37,9 +37,19 @@ public class OrderList {
     public void setOrderInfo(List<OrderInfoType> orderInfo) {
         this.orderInfo = orderInfo;
     }
-    @XmlElement(namespace = "http://www.oldCompany.com/order")
+    @XmlElement(namespace = "http://www.oldCompany.com/order",required = true)
     protected List<OrderInfoType> orderInfo;
 
+    public OrderInfoType[] getOrderInfoTypes() {
+        return orderInfoTypes;
+    }
+
+    public void setOrderInfoTypes(OrderInfoType[] orderInfoTypes) {
+        this.orderInfoTypes = orderInfoTypes;
+    }
+
+    @XmlElement(namespace = "http://www.oldCompany.com/order",required = true)
+    protected OrderInfoType[] orderInfoTypes;
     /**
      * Gets the value of the orderInfo property.
      * 

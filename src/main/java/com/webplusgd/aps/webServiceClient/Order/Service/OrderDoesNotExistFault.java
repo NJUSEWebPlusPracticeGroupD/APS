@@ -2,7 +2,8 @@
 package com.webplusgd.aps.webServiceClient.Order.Service;
 
 import javax.xml.ws.WebFault;
-import com.webplusgd.aps.webServiceClient.Order.Entity.*;
+
+import com.webplusgd.aps.webServiceClient.Order.Entity.OrderDoesNotExistFaultType;
 
 
 /**

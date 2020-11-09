@@ -24,13 +24,13 @@ public class BOMService
 
     private final static URL BOMSERVICE_WSDL_LOCATION;
     private final static WebServiceException BOMSERVICE_EXCEPTION;
-    private final static QName BOMSERVICE_QNAME = new QName("http://www.oldSystem.com/wsdl", "BOMService");
+    private final static QName BOMSERVICE_QNAME = new QName("http://www.oldSystem.com/wsdl", "BOMPortImplService");
 
     static {
         URL url = null;
         WebServiceException e = null;
         try {
-            url = new URL("file:/D:/oceania-iter2/webclientTest/xml/wsdl/BOM.wsdl");
+            url = new URL("http://localhost:8088/ws/bom" + "?wsdl");
         } catch (MalformedURLException ex) {
             e = new WebServiceException(ex);
         }
@@ -69,7 +69,7 @@ public class BOMService
      */
     @WebEndpoint(name = "BOMPort")
     public BOMPort getBOMPort() {
-        return super.getPort(new QName("http://www.oldSystem.com/wsdl", "BOMPort"), BOMPort.class);
+        return super.getPort(new QName("http://www.oldSystem.com/wsdl", "BOMPortPort"), BOMPort.class);
     }
 
     /**
@@ -81,7 +81,7 @@ public class BOMService
      */
     @WebEndpoint(name = "BOMPort")
     public BOMPort getBOMPort(WebServiceFeature... features) {
-        return super.getPort(new QName("http://www.oldSystem.com/wsdl", "BOMPort"), BOMPort.class, features);
+        return super.getPort(new QName("http://www.oldSystem.com/wsdl", "BOMPortPort"), BOMPort.class, features);
     }
 
     private static URL __getWsdlLocation() {

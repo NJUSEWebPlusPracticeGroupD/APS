@@ -8,12 +8,16 @@ import com.webplusgd.aps.domain.Bom;
 import com.webplusgd.aps.domain.Order;
 import com.webplusgd.aps.domain.Resource;
 import com.webplusgd.aps.domain.Shift;
+import com.webplusgd.aps.webServiceClient.Attendance.Entity.GroupScheduleInformationList;
+
+import com.webplusgd.aps.webServiceClient.Attendance.Entity.GroupScheduleInformationType;
 import com.webplusgd.aps.webServiceClient.Attendance.Entity.ShiftList;
 import com.webplusgd.aps.webServiceClient.Attendance.Entity.ShiftType;
 import com.webplusgd.aps.webServiceClient.Attendance.Service.AttendancePortImpl;
 import com.webplusgd.aps.webServiceClient.BOM.Entity.BOMList;
 import com.webplusgd.aps.webServiceClient.BOM.Entity.BOMType;
 import com.webplusgd.aps.webServiceClient.BOM.Entity.ProcessType;
+import com.webplusgd.aps.webServiceClient.BOM.Entity.ResourceInfoType;
 import com.webplusgd.aps.webServiceClient.BOM.Service.BOMPortImpl;
 import com.webplusgd.aps.webServiceClient.Erp.Entity.GroupInfoList;
 import com.webplusgd.aps.webServiceClient.Erp.Entity.GroupInformationType;
@@ -45,6 +49,10 @@ public class WSImport2DB {
     ShiftRepository shiftRepository;
 
     public  void wsImport(){
+
+
+
+
         //--------order------------------------
         OrderPortImpl orderPort = new OrderPortImpl();
         OrderList orderList = orderPort.getAllOrders();
@@ -59,32 +67,8 @@ public class WSImport2DB {
             order.setOrderCount(((Integer)o.getNumOfOrder()).longValue());
             orders.add(order);
         }
-        //orderRepository.saveAll(orders);
 
-        //------------resource------------
-        ErpPortImpl erpPort = new ErpPortImpl();
-        GroupInfoList groupInfoList = erpPort.getAllGroupInfos();
-        List<GroupInformationType> groupInformationTypes = groupInfoList.getGroupInfo();
-        MachineInfoList machineInfoList = erpPort.getAllMachineInfos();
-        List<MachineInfoType> machineInfoTypes = machineInfoList.getMachineInfo();
-        List<Resource> resources = new ArrayList<>();
-        for (GroupInformationType g:groupInformationTypes){
-            Resource resource = new Resource();
-            resource.setId(g.getGroupId());
-            resource.setType("班组");
-            resource.setCount(g.getAbility());
-            resources.add(resource);
-        }
 
-        for (MachineInfoType m:machineInfoTypes){
-            Resource resource = new Resource();
-            resource.setId(m.getName());
-            resource.setType(m.getType().value());
-            resource.setCount(m.getNumber());
-            resources.add(resource);
-        }
-
-        //resourceRepository.saveAll(resources);
 
         //----------shift----------------------
         AttendancePortImpl attendancePort = new AttendancePortImpl();
@@ -102,14 +86,77 @@ public class WSImport2DB {
         timeMap.put("晚班",new Integer[]{19,7});
         timeMap.put("休息",new Integer[]{0,0});
         for(ShiftType s:shiftTypes){
-           Shift shift = new Shift();
-           shift.setShiftCode(codeMap.get(s.getShiftKind().value()));
-           shift.setShiftName(s.getShiftKind().value());
-           shift.setStartTime(timeMap.get(s.getShiftKind().value())[0]);
-           shift.setEndTime(timeMap.get(s.getShiftKind().value())[1]);
-           shifts.add(shift);
+            Shift shift = new Shift();
+            shift.setShiftCode(codeMap.get(s.getShiftKind().value()));
+            shift.setShiftName(s.getShiftKind().value());
+            shift.setStartTime(timeMap.get(s.getShiftKind().value())[0]);
+            shift.setEndTime(timeMap.get(s.getShiftKind().value())[1]);
+            shifts.add(shift);
         }
-        shiftRepository.saveAll(shifts);
+
+
+        //------------resource------------
+        ErpPortImpl erpPort = new ErpPortImpl();
+        GroupInfoList groupInfoList = erpPort.getAllGroupInfos();
+        List<GroupInformationType> groupInformationTypes = groupInfoList.getGroupInfo();
+        MachineInfoList machineInfoList = erpPort.getAllMachineInfos();
+        List<MachineInfoType> machineInfoTypes = machineInfoList.getMachineInfo();
+        GroupScheduleInformationList groupScheduleInformationList = attendancePort.getAllGroupSchedules();
+        List<GroupScheduleInformationType> groupScheduleInformationTypes = groupScheduleInformationList.getGroupScheduleInformation();
+
+        List<Resource> resources = new ArrayList<>();
+        for (GroupInformationType g:groupInformationTypes){
+            Resource resource = new Resource();
+            resource.setId(g.getGroupName());
+            resource.setType("班组");
+            resource.setCount(g.getAbility());
+
+            GroupScheduleInformationType curGs = null;
+            for(GroupScheduleInformationType gs:groupScheduleInformationTypes){
+                if(gs.getGroupInformation().getGroupName().equals(g.getGroupName())){
+                    curGs = gs;
+                    break;
+                }
+            }
+            if(curGs==null){
+                System.out.println("gs does not exist");
+                return;
+            }
+
+            resource.setShiftCode(codeMap.get(curGs.getShift().getShiftKind().value()));
+            resource.setStartDay(1);
+            resource.setEndDay(7);
+            resources.add(resource);
+        }
+
+        for (MachineInfoType m:machineInfoTypes){
+            Resource resource = new Resource();
+            resource.setId(m.getName());
+            if(m.getType().value().equals("line")){
+                resource.setType("线体");
+            }
+            else{
+                resource.setType("设备");
+            }
+
+            resource.setCount(m.getNumber());
+
+            resource.setShiftCode(0);
+            if(m.getName().contains("line")){
+                resource.setStartDay(1);
+                resource.setEndDay(5);
+            }
+            else{
+                resource.setStartDay(1);
+                resource.setEndDay(7);
+            }
+
+            resources.add(resource);
+        }
+
+
+
+
 
         //-----------bom--------------
         List<Bom> boms = new ArrayList<>();
@@ -120,8 +167,13 @@ public class WSImport2DB {
             boms.addAll(getBoms(b));
 
         }
-        bomRepository.saveAll(boms);
 
+        System.out.println("quit");
+
+        //orderRepository.saveAll(orders);
+        //resourceRepository.saveAll(resources);
+        //shiftRepository.saveAll(shifts);
+        //bomRepository.saveAll(boms);
     }
 
     private Date xml2Date(XMLGregorianCalendar dateType){
@@ -140,12 +192,40 @@ public class WSImport2DB {
 
     private List<Bom> getBoms(BOMType bomType){
         List<Bom> boms = new ArrayList<>();
-        Bom bom = new Bom();
+
         Integer materialId = Integer.parseInt(bomType.getItemId());
         List<ProcessType> processTypes = bomType.getProcessList().getProcess();
         for(ProcessType p:processTypes){
+            List<ResourceInfoType> alterGroups = p.getAlternativeGroupInfoList().getAlternativeGroupInfo();
+            List<ResourceInfoType> alterMachines = p.getAlternativeMachineInfoList().getAlternativeMachineInfo();
+            for(ResourceInfoType resourceInfo:alterGroups){
+                Bom bom = new Bom();
+                bom.setMaterialId(materialId);
+                bom.setCapacity(resourceInfo.getStandardCapacity());
+                bom.setCraft(p.getProcessName());
+                bom.setQuota(p.getNumOfPersonnel());
+                bom.setResourceId(resourceInfo.getResourceName());
+                bom.setResourceType(0);
+                bom.setSwitchingTime(resourceInfo.getTimeOfChangeLine());
 
+                boms.add(bom);
+            }
+
+            for(ResourceInfoType resourceInfo:alterMachines){
+                Bom bom = new Bom();
+                bom.setMaterialId(materialId);
+                bom.setCapacity(resourceInfo.getStandardCapacity());
+                bom.setCraft(p.getProcessName());
+                bom.setQuota(p.getNumOfPersonnel());
+                bom.setResourceId(resourceInfo.getResourceName());
+                bom.setResourceType(1);
+                bom.setSwitchingTime(resourceInfo.getTimeOfChangeLine());
+
+                boms.add(bom);
+            }
         }
-        return null;
+        return boms;
     }
+
+
 }

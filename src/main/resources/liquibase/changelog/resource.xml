@@ -13,7 +13,16 @@
             <column name="resource_count" type="int" remarks="资源数量" defaultValue="1">
                 <constraints nullable="false"/>
             </column>
-            <column name="resource_type" type="varchar" remarks="资源类型(工作中心、资源组、资源)" encoding="utf8" defaultValue="资源">
+            <column name="resource_type" type="varchar(10)" remarks="资源类型(工作中心、资源组、资源)" encoding="utf8" defaultValue="资源">
+                <constraints nullable="false"/>
+            </column>
+            <column name="shift_code" type="tinyint(1)" remarks="班次代码(0全天 1早班 2晚班 3休息)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="start_day" type="int" remarks="开始星期(几)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="end_day" type="int" remarks="结束星期(几)">
                 <constraints nullable="false"/>
             </column>
         </createTable>

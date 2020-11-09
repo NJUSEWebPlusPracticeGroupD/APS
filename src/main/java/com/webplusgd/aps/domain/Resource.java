@@ -20,5 +20,10 @@ public class Resource {
     private String type;
     @Column(name="resource_count")
     private Integer count;
-
+    @Column(name = "shift_code")
+    private Integer shiftCode;
+    @Column(name = "start_day")
+    private Integer startDay;
+    @Column(name = "end_day")
+    private Integer endDay;
 }

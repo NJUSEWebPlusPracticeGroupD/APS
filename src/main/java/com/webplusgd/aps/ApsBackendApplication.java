@@ -11,10 +11,7 @@ import java.util.Arrays;
 public class ApsBackendApplication {
 
     public static void main(String[] args) {
-        ApplicationContext context = SpringApplication.run(ApsBackendApplication.class, args);
-
-//        WSImport2DB wsImport2DB = (WSImport2DB)context.getBean("WSImport2DB");
-//        wsImport2DB.wsImport();
+        SpringApplication.run(ApsBackendApplication.class, args);
     }
 
 }

@@ -32,7 +32,7 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="resource-02" author="toby">
+    <changeSet id="bom-02" author="toby">
         <modifyDataType tableName="bom" columnName="resource_id" newDataType="varchar(255)"/>
     </changeSet>
 </databaseChangeLog>

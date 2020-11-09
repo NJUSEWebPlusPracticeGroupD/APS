@@ -146,7 +146,7 @@ public class WSImport2DB {
 
             resource.setShiftCode(codeMap.get(curGs.getShift().getShiftKind().value()));
             resource.setStartDay(1);
-            resource.setEndDay(7);
+            resource.setEndDay(5);
             resources.add(resource);
         }
 

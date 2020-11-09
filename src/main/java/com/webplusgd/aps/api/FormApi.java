@@ -58,5 +58,5 @@ public interface FormApi {
      */
     @Operation(summary = "获取生产单（订单）资源关系表")
     @Log("获取生产单（订单）资源关系表")
-    ResponseVO<ArrayList<OrderResourceItem>> getProduceResourceForm();
+    ResponseVO<OrderResourceForm> getProduceResourceForm();
 }

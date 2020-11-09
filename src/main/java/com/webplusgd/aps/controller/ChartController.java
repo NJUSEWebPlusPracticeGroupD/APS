@@ -1,10 +1,13 @@
 package com.webplusgd.aps.controller;
 
 import com.webplusgd.aps.api.ChartApi;
+import com.webplusgd.aps.service.ResourceLoadService;
 import com.webplusgd.aps.vo.OrderGanttItem;
 import com.webplusgd.aps.vo.ResourceGanttItem;
 import com.webplusgd.aps.vo.ResourceLoadChart;
 import com.webplusgd.aps.vo.ResponseVO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -16,6 +19,8 @@ import java.util.Date;
 @RestController
 @RequestMapping("/api/chart")
 public class ChartController implements ChartApi {
+    @Autowired
+    private ResourceLoadService resourceLoadService;
 
     @Override
     @GetMapping("/getResourceGanttChart")
@@ -35,7 +40,7 @@ public class ChartController implements ChartApi {
     @GetMapping("/getResourceLoadChart")
     public ResponseVO<ResourceLoadChart> getResourceLoadChart(@RequestParam Date startDate) {
 
-        return ResponseVO.buildSuccess(new ResourceLoadChart());
+        return ResponseVO.buildSuccess(resourceLoadService.getResourceLoadChart(startDate));
     }
 
 

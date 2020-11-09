@@ -24,7 +24,8 @@ public class ApsConstraintProvider implements ConstraintProvider {
     public Constraint[] defineConstraints(ConstraintFactory constraintFactory) {
         return new Constraint[]{
                 resourceUniqueConflict(constraintFactory),
-                noResourceShiftConflict(constraintFactory)
+                noResourceShiftConflict(constraintFactory),
+                noBomResourceConflict(constraintFactory)
         };
     }
 

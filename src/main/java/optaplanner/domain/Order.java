@@ -19,6 +19,10 @@ public class Order {
     private int orderNum;
     private LocalDateTime termOfDeliver;
     /**
+     * 订单开始排程的时间
+     */
+    private LocalDateTime startTime;
+    /**
      * 订单完成的时间
      */
     private LocalDateTime finishTime;

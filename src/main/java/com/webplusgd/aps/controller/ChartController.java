@@ -23,7 +23,6 @@ public class ChartController {
 
     @RequestMapping(value = "/getResourceGanttChart", method = RequestMethod.GET)
     public ResponseVO getResourceGanttChart(@RequestParam Date date){
-
         return ResponseVO.buildSuccess(new ArrayList<ResourceGanttItem>());
     }
 
@@ -37,6 +36,12 @@ public class ChartController {
     public ResponseVO getResourceLoadChart(@RequestParam Date startDate){
 
         return ResponseVO.buildSuccess(new ResourceLoadChart());
+    }
+
+    @RequestMapping(value = "/test", method = RequestMethod.GET)
+    public ResponseVO testConnection(@RequestParam String testStr){
+        System.out.println("backend success! " + testStr);
+        return ResponseVO.buildSuccess("frontend success!" + testStr);
     }
 
 

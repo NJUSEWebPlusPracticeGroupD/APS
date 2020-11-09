@@ -29,7 +29,9 @@ import com.webplusgd.aps.webServiceClient.Order.Entity.OrderList;
 import com.webplusgd.aps.webServiceClient.Order.Service.OrderPortImpl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.util.*;
 
@@ -38,15 +40,33 @@ import java.util.*;
  * @create_time 11/3/2020 10:54 AM
  * 导入WebService到数据库
  */
+@Component
 public class WSImport2DB {
+
+    private OrderRepository orderRepository;
+
+   private ResourceRepository resourceRepository;
+
+    private BomRepository bomRepository;
+
+    private ShiftRepository shiftRepository;
+
     @Autowired
-    OrderRepository orderRepository;
+    public void setOrderRepository(OrderRepository orderRepository){
+        this.orderRepository=orderRepository;
+    }
     @Autowired
-    ResourceRepository resourceRepository;
+    public void setBomRepository(BomRepository bomRepository){
+        this.bomRepository=bomRepository;
+    }
     @Autowired
-    BomRepository bomRepository;
+    public void setShiftRepository(ShiftRepository shiftRepository){
+        this.shiftRepository=shiftRepository;
+    }
     @Autowired
-    ShiftRepository shiftRepository;
+    public void setResourceRepository(ResourceRepository resourceRepository){
+        this.resourceRepository=resourceRepository;
+    }
 
     public  void wsImport(){
 
@@ -56,10 +76,11 @@ public class WSImport2DB {
         //--------order------------------------
         OrderPortImpl orderPort = new OrderPortImpl();
         OrderList orderList = orderPort.getAllOrders();
-        System.out.println(orderList.getOrderInfo().size());
+
         List<OrderInfoType> orderInfoTypes = orderList.getOrderInfo();
+        OrderInfoType[] orderInfoTypes1 = orderList.getOrderInfoTypes();
         List<Order> orders = new ArrayList<Order>();
-        for(OrderInfoType o : orderInfoTypes){
+        for(OrderInfoType o : orderInfoTypes1){
             Order order = new Order();
             order.setOrderId(Integer.parseInt(o.getOrderId()));
             order.setDeliveryDate(xml2Date(o.getTermOfDelivery()));
@@ -170,22 +191,25 @@ public class WSImport2DB {
 
         System.out.println("quit");
 
-        //orderRepository.saveAll(orders);
-        //resourceRepository.saveAll(resources);
-        //shiftRepository.saveAll(shifts);
-        //bomRepository.saveAll(boms);
+        orderRepository.saveAll(orders);
+        resourceRepository.saveAll(resources);
+        shiftRepository.saveAll(shifts);
+        bomRepository.saveAll(boms);
     }
 
     private Date xml2Date(XMLGregorianCalendar dateType){
         int year = dateType.getYear();
         int month = dateType.getMonth();
         int day = dateType.getDay();
-        int hour = dateType.getHour();
-        int minute = dateType.getMinute();
-        int second = dateType.getSecond();
+
 
         Calendar calendar = Calendar.getInstance();
-        calendar.set(year, month, day, hour, minute, second);
+        calendar.set(Calendar.YEAR,year);
+        calendar.set(Calendar.MONTH,month-1);
+        calendar.set(Calendar.DATE,day);
+        calendar.set(Calendar.HOUR_OF_DAY,23);
+        calendar.set(Calendar.MINUTE,59);
+        calendar.set(Calendar.SECOND,59);
         Date date = calendar.getTime();
         return date;
     }

@@ -27,6 +27,7 @@ public enum ShiftKindType {
 
     早班,
     晚班,
+    休息,
     全天;
 
     public String value() {

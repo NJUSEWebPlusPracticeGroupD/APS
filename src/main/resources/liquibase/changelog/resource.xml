@@ -27,4 +27,8 @@
             </column>
         </createTable>
     </changeSet>
+
+    <changeSet id="resource-02" author="rollingegg">
+        <modifyDataType tableName="resource" columnName="resource_id" newDataType="varchar(255)"/>
+    </changeSet>
 </databaseChangeLog>

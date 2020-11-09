@@ -15,7 +15,7 @@ public class Resource {
 
     @Id
     @Column(name="resource_id")
-    private Integer id;
+    private String id;
     @Column(name="resource_type")
     private String type;
     @Column(name="resource_count")

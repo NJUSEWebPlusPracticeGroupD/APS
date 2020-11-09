@@ -7,5 +7,5 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public interface OrderProduceRelationFormService {
-    ResponseVO<ArrayList<OrderProduceItem>> getOrderProduceRelationForm(Date date);
+    ResponseVO<ArrayList<OrderProduceItem>> getOrderProduceRelationForm(Date date,Integer orderId);
 }

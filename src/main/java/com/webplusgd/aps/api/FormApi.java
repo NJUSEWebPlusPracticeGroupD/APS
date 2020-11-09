@@ -36,7 +36,10 @@ public interface FormApi {
     ResponseVO<ArrayList<OrderProduceItem>> getOrderProduceRelationForm(
             @DateTimeFormat(pattern = "yyyy-MM-dd", iso = DateTimeFormat.ISO.DATE)
             @Parameter(description = "当前查看日期", example = "2018-09-10")
-            @RequestParam Date date);
+            @RequestParam Date date,
+            @Parameter(description = "要查询的哪个订单的生产单", example = "2018-09-10")
+            @RequestParam Integer orderId
+            );
 
     /**
      * 获取生产单

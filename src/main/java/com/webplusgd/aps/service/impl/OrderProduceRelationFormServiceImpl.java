@@ -9,7 +9,7 @@ import java.util.Date;
 
 public class OrderProduceRelationFormServiceImpl implements OrderProduceRelationFormService {
     @Override
-    public ResponseVO<ArrayList<OrderProduceItem>> getOrderProduceRelationForm(Date date) {
+    public ResponseVO<ArrayList<OrderProduceItem>> getOrderProduceRelationForm(Date date,Integer orderId) {
         return null;
     }
 }

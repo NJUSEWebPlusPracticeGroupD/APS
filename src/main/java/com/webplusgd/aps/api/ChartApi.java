@@ -8,6 +8,7 @@ import com.webplusgd.aps.vo.ResponseVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
@@ -24,8 +25,12 @@ public interface ChartApi {
      * @param date 查看日期
      * @return
      */
+    @Operation(summary = "获取资源甘特图")
     @Log("获取资源甘特图")
-    ResponseVO<ArrayList<ResourceGanttItem>> getResourceGanttChart(@RequestParam Date date);
+    ResponseVO<ArrayList<ResourceGanttItem>> getResourceGanttChart(
+            @DateTimeFormat(pattern = "yyyy-MM-dd", iso = DateTimeFormat.ISO.DATE)
+            @Parameter(description = "当前查看日期", example = "2018-09-10")
+            @RequestParam Date date);
 
     /**
      * 获取订单甘特图
@@ -35,7 +40,10 @@ public interface ChartApi {
      */
     @Operation(summary = "获取订单甘特图", tags = {"Chart"})
     @Log("获取订单甘特图")
-    ResponseVO<ArrayList<OrderGanttItem>> getOrderGanttChart(@RequestParam Date date);
+    ResponseVO<ArrayList<OrderGanttItem>> getOrderGanttChart(
+            @DateTimeFormat(pattern = "yyyy-MM-dd", iso = DateTimeFormat.ISO.DATE)
+            @Parameter(description = "当前查看日期", example = "2018-09-10")
+            @RequestParam Date date);
 
     /**
      * 获取资源负载图
@@ -43,6 +51,10 @@ public interface ChartApi {
      * @param startDate 查看开始日期后的一周
      * @return
      */
+    @Operation(summary = "获取资源负载图")
     @Log("获取资源负载图")
-    ResponseVO<ResourceLoadChart> getResourceLoadChart(@Parameter(description = "当前查看日期", example = "2018/09/10") @RequestParam Date startDate);
+    ResponseVO<ResourceLoadChart> getResourceLoadChart(
+            @DateTimeFormat(pattern = "yyyy-MM-dd", iso = DateTimeFormat.ISO.DATE)
+            @Parameter(description = "当前查看日期", example = "2018-09-10")
+            @RequestParam Date startDate);
 }

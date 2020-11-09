@@ -1,45 +1,27 @@
 package com.webplusgd.aps.vo;
 
-import java.util.Date;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
 import java.util.List;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class ResourceLoadItem {
-    private Date date;
 
+    @Schema(example = "2018-07-13", description = "起始日期")
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate date;
+
+    @Schema(example = "line1", description = "资源名称")
     private String name;
 
+    @Schema(example = "[30,20,40,50,80,20,10]", description = "起始日期在内的七天负载率")
     private List<Double> rates;
 
-    public ResourceLoadItem(Date date, String name, List<Double> rates) {
-        this.date = date;
-        this.name = name;
-        this.rates = rates;
-    }
-
-    public ResourceLoadItem() {
-    }
-
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public List<Double> getRates() {
-        return rates;
-    }
-
-    public void setRates(List<Double> rates) {
-        this.rates = rates;
-    }
 }

@@ -36,11 +36,11 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class GroupScheduleInformationType {
 
-    @XmlElement(name = "GroupInformation", required = true)
+    @XmlElement(name = "GroupInformation", required = true,namespace = "http://www.oldCompany.com/erp")
     protected GroupInformationType groupInformation;
-    @XmlElement(name = "Shift", required = true)
+    @XmlElement(name = "Shift", required = true,namespace = "http://www.oldCompany.com/attendance")
     protected ShiftType shift;
-    @XmlElement(name = "DaysOfWeek", required = true)
+    @XmlElement(name = "DaysOfWeek", required = true,namespace = "http://www.oldCompany.com/attendance")
     protected DaysOfWeekType daysOfWeek;
 
     /**

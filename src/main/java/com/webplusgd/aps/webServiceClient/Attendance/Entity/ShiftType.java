@@ -35,10 +35,10 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class ShiftType {
 
-    @XmlElement(required = true)
+    @XmlElement(required = true,namespace = "")
     @XmlSchemaType(name = "string")
     protected ShiftKindType shiftKind;
-    @XmlElement(required = true)
+    @XmlElement(required = true,namespace = "")
     protected ShiftTimeType shiftTime;
 
     /**

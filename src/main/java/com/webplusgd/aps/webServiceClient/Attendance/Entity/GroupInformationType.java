@@ -36,9 +36,9 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class GroupInformationType {
 
-    @XmlElement(required = true)
+    @XmlElement(required = true,namespace = "")
     protected String groupId;
-    @XmlElement(required = true)
+    @XmlElement(required = true,namespace = "")
     protected String groupName;
     protected int ability;
 

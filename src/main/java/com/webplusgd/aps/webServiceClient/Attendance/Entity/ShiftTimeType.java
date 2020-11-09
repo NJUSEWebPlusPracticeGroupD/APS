@@ -36,10 +36,10 @@ import javax.xml.datatype.XMLGregorianCalendar;
 })
 public class ShiftTimeType {
 
-    @XmlElement(required = true)
+    @XmlElement(required = true,namespace = "")
     @XmlSchemaType(name = "date")
     protected XMLGregorianCalendar startTime;
-    @XmlElement(required = true)
+    @XmlElement(required = true,namespace = "")
     @XmlSchemaType(name = "date")
     protected XMLGregorianCalendar endTime;
 

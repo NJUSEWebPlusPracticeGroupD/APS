@@ -33,7 +33,7 @@ public interface FormApi {
      */
     @Operation(summary = "获取订单生产单关系表")
     @Log("获取订单生产单关系表")
-    ResponseVO<ArrayList<OrderProduceItem>> getOrderProduceRelationForm(
+    ResponseVO<ArrayList<ResourceProduceItem>> getOrderProduceRelationForm(
             @DateTimeFormat(pattern = "yyyy-MM-dd", iso = DateTimeFormat.ISO.DATE)
             @Parameter(description = "当前查看日期", example = "2018-09-10")
             @RequestParam Date date,
@@ -49,7 +49,7 @@ public interface FormApi {
      */
     @Operation(summary = "获取生产单")
     @Log("获取生产单")
-    ResponseVO<ArrayList<OrderProduceItem>> getProduceForm(
+    ResponseVO<ArrayList<ResourceProduceItem>> getProduceForm(
             @DateTimeFormat(pattern = "yyyy-MM-dd", iso = DateTimeFormat.ISO.DATE)
             @Parameter(description = "当前查看日期", example = "2018-09-10")
             @RequestParam Date date);

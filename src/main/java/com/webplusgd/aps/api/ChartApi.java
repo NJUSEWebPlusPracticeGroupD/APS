@@ -1,7 +1,7 @@
 package com.webplusgd.aps.api;
 
 import com.webplusgd.aps.annotation.Log;
-import com.webplusgd.aps.vo.OrderGanttItem;
+import com.webplusgd.aps.vo.OrderGanttChart;
 import com.webplusgd.aps.vo.ResourceGanttItem;
 import com.webplusgd.aps.vo.ResourceLoadChart;
 import com.webplusgd.aps.vo.ResponseVO;
@@ -40,7 +40,7 @@ public interface ChartApi {
      */
     @Operation(summary = "获取订单甘特图", tags = {"Chart"})
     @Log("获取订单甘特图")
-    ResponseVO<ArrayList<OrderGanttItem>> getOrderGanttChart(
+    ResponseVO<OrderGanttChart> getOrderGanttChart(
             @DateTimeFormat(pattern = "yyyy-MM-dd", iso = DateTimeFormat.ISO.DATE)
             @Parameter(description = "当前查看日期", example = "2018-09-10")
             @RequestParam Date date);

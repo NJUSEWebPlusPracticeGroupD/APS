@@ -14,7 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 public class OrderPlanItem {
     @Schema(example = "418477",description = "订单号")
-    private Integer orderNumber;
+    private String orderNumber;
     @Schema(example = "true",description = "订单是否拆分")
     private boolean isSplit;
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")

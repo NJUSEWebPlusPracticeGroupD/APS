@@ -22,7 +22,7 @@ public class FormController implements FormApi {
 
     @Override
     @GetMapping("/getOrderProduceRelationForm")
-    public ResponseVO<ArrayList<ResourceProduceItem>> getOrderProduceRelationForm(@RequestParam Date date, @RequestParam Integer orderId) {
+    public ResponseVO<ArrayList<ResourceProduceItem>> getOrderProduceRelationForm(@RequestParam Date date, @RequestParam String orderId) {
         return null;
     }
 

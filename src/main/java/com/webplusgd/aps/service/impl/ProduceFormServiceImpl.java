@@ -2,8 +2,10 @@ package com.webplusgd.aps.service.impl;
 
 import com.webplusgd.aps.optaplanner.ScheduledTask;
 import com.webplusgd.aps.service.ProduceFormService;
+import com.webplusgd.aps.vo.OrderPlanItem;
 import com.webplusgd.aps.vo.ResourceProduceItem;
 import com.webplusgd.aps.vo.ResponseVO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -12,14 +14,30 @@ import java.util.*;
 @Component
 public class ProduceFormServiceImpl implements ProduceFormService {
 
+    @Autowired
+    OrderPlanFormServiceImpl orderPlanFormService;
+
     public ArrayList<ResourceProduceItem> ProduceItems;
     public List<ScheduledTask> plan;
 
     @Override
     public ResponseVO<ArrayList<ResourceProduceItem>> getProduceForm(Date date) {
 
-        ArrayList<ResourceProduceItem> res = new ArrayList<>();
+        //todo: 获取plan
 
+        if(plan==null||plan.size()==0){
+            return ResponseVO.buildFailure("还未进行排程");
+        }
+
+        ResponseVO responseVO = orderPlanFormService.getOrderPlanForm();
+        if(!responseVO.getSuccess()){
+            return ResponseVO.buildFailure("还没有排程计划或排程出错");
+        }
+
+        ArrayList<OrderPlanItem> orderPlanItems = orderPlanFormService.orderPlanItems;
+
+
+        ArrayList<ResourceProduceItem> res = new ArrayList<>();
 
 
         Calendar calendar = new GregorianCalendar();
@@ -33,8 +51,8 @@ public class ProduceFormServiceImpl implements ProduceFormService {
         LocalDateTime startTime = LocalDateTime.ofInstant(startDate.toInstant(), ZoneId.systemDefault());
         LocalDateTime endTime = startTime.plusDays(1);
 
-        LocalDateTime[] timeSegment = new LocalDateTime[24];
-        for(int i=0;i<24;i++){
+        LocalDateTime[] timeSegment = new LocalDateTime[25];
+        for(int i=0;i<25;i++){
             timeSegment[i] = startTime.plusHours(i);
         }
         if(!timeSegment[23].isEqual(endTime)){
@@ -42,6 +60,7 @@ public class ProduceFormServiceImpl implements ProduceFormService {
             return null;
         }
 
+        //---------获取每个资源的scheduledTask----------
         Map<String, ArrayList<ScheduledTask>> resourceIdAndTime = new HashMap<>();
         for(int i=0;i<plan.size();i++){
             ScheduledTask st = plan.get(i);
@@ -56,6 +75,8 @@ public class ProduceFormServiceImpl implements ProduceFormService {
                 resourceIdAndTime.get(st.getResource().getName()).add(st);
             }
         }
+
+        //---------------按照timeSlot排序----------
 
         for(String resourceId: resourceIdAndTime.keySet()){
             ArrayList<ScheduledTask> scheduledTasks = resourceIdAndTime.get(resourceId);
@@ -76,20 +97,49 @@ public class ProduceFormServiceImpl implements ProduceFormService {
                 }
             });
 
+            //--------初始化表项----------
             ResourceProduceItem resourceProduceItem = new ResourceProduceItem();
             resourceProduceItem.setResource(resourceId);
-
-
             ArrayList<String> times = new ArrayList<>();
+            resourceProduceItem.setOrderFor24Hours(times);
             for(int i=0;i<24;i++){
                 times.add("");
             }
 
             for(ScheduledTask st:scheduledTasks){
+                //------每个schedule对应的订单号--------
                 LocalDateTime start = st.getTimeslot().getStartDateTime();
                 LocalDateTime end = st.getTimeslot().getEndDateTime();
+
+                String curOrderId = st.getOrder().getOrderId()+"";
+                //-----------子订单搜索----------
+                OrderPlanItem curOderPlanItem = null;
+                for(OrderPlanItem orderPlanItem:orderPlanItems){
+                    if(orderPlanItem.getOrderNumber().equals(curOrderId)){
+                        curOderPlanItem = orderPlanItem;
+                    }
+                }
+                if(curOderPlanItem==null){
+                    System.out.println("排程出错，缺少订单项");
+                    return ResponseVO.buildFailure("排程出错，缺少订单项");
+                }
+
+                if(curOderPlanItem.getChildren()!=null){
+                    //------有子订单----------
+                    for(OrderPlanItem child:curOderPlanItem.getChildren()){
+                        LocalDateTime childStart = child.getStartTime();
+                        LocalDateTime childEnd = child.getEndTime();
+                        if((start.isEqual(childStart)||start.isAfter(childStart))&&
+                                (end.isEqual(childEnd)||end.isBefore(childEnd))){
+                            //-------属于此子订单时间段--------
+                            curOrderId = child.getOrderNumber();
+                            break;
+                        }
+                    }
+                }
+
                 int startIndex = 0;
-                int endIndex = 23;
+                int endIndex = 24;
                 for(int j=0;j<timeSegment.length;j++){
                     if(start.isEqual(timeSegment[j])){
                         startIndex = j;
@@ -98,12 +148,13 @@ public class ProduceFormServiceImpl implements ProduceFormService {
                         endIndex = j;
                     }
                 }
+
                 for(int j=startIndex;j<endIndex;j++){
-                    times.set(j,st.getOrder().getOrderId()+"");
+                    times.set(j,curOrderId);
                 }
             }
 
-            resourceProduceItem.setOrderFor24Hours(times);
+
             res.add(resourceProduceItem);
         }
 

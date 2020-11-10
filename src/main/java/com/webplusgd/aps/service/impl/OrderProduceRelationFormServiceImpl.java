@@ -1,6 +1,7 @@
 package com.webplusgd.aps.service.impl;
 
 import com.webplusgd.aps.service.OrderProduceRelationFormService;
+import com.webplusgd.aps.vo.OrderPlanItem;
 import com.webplusgd.aps.vo.ResourceProduceItem;
 import com.webplusgd.aps.vo.ResponseVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +15,21 @@ public class OrderProduceRelationFormServiceImpl implements OrderProduceRelation
     @Autowired
     ProduceFormServiceImpl produceFormService;
 
+
     @Override
-    public ResponseVO<ArrayList<ResourceProduceItem>> getOrderProduceRelationForm(Date date, Integer orderId) {
-        produceFormService.getProduceForm(date);
+    public ResponseVO<ArrayList<ResourceProduceItem>> getOrderProduceRelationForm(Date date, String orderId) {
+
+        ResponseVO responseVO =  produceFormService.getProduceForm(date);
+        if(!responseVO.getSuccess()){
+            return ResponseVO.buildFailure("还没有排程计划");
+        }
+
+
+
         ArrayList<ResourceProduceItem> allProduces = produceFormService.ProduceItems;
+
         ArrayList<ResourceProduceItem> res = new ArrayList<>();
+
         for(ResourceProduceItem rpi:allProduces){
             if(rpi.getOrderFor24Hours().contains(orderId+"")){
                 ResourceProduceItem newRpi = new ResourceProduceItem();
@@ -33,6 +44,7 @@ public class OrderProduceRelationFormServiceImpl implements OrderProduceRelation
                 res.add(newRpi);
             }
         }
+
 
 
         return ResponseVO.buildSuccess(res);

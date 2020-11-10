@@ -60,11 +60,14 @@ public class DataManager {
         LocalDateTime latestEndTime=currentTime;
         for (Order orderFromDb : orderListFromDb) {
             List<Bom> order2BomFromDb = bomRepository.findByMaterialId(orderFromDb.getMaterialId());
+            if (order2BomFromDb.size()==0){
+                continue;
+            }
             //  取所需资源
             List<String> groupResourceIdList = order2BomFromDb.stream().filter(bom -> bom.getResourceType() == 0).map(Bom::getResourceId).collect(Collectors.toList());
             List<String> machineResourceIdList = order2BomFromDb.stream().filter(bom -> bom.getResourceType() == 1).map(Bom::getResourceId).collect(Collectors.toList());
-            List<GroupResource> groupResourceList = resourceRepository.findAllById(groupResourceIdList).stream().map(resource -> new GroupResource(resource.getCount(), resource.getType(), getResourceShift(resource.getShiftCode()))).collect(Collectors.toList());
-            List<MachineResource> machineResourceList = resourceRepository.findAllById(machineResourceIdList).stream().map(resource -> new MachineResource(resource.getCount(), resource.getType(), getResourceShift(resource.getShiftCode()))).collect(Collectors.toList());
+            List<GroupResource> groupResourceList = resourceRepository.findAllById(groupResourceIdList).stream().map(resource -> new GroupResource(resource.getCount(), resource.getId(), getResourceShift(resource.getShiftCode()))).collect(Collectors.toList());
+            List<MachineResource> machineResourceList = resourceRepository.findAllById(machineResourceIdList).stream().map(resource -> new MachineResource(resource.getCount(), resource.getId(), getResourceShift(resource.getShiftCode()))).collect(Collectors.toList());
             optaplanner.domain.Order tmpOrder=new optaplanner.domain.Order(orderFromDb.getOrderId(),
                     new Product(orderFromDb.getMaterialId(), groupResourceList, machineResourceList, order2BomFromDb.get(0).getQuota(), order2BomFromDb.get(0).getCapacity()), orderFromDb.getOrderCount(),
                     DateUtil.date2LocalDateTime(orderFromDb.getDeliveryDate()),
@@ -81,8 +84,8 @@ public class DataManager {
         //  取所需资源
         List<String> groupResourceIdList = bomListFromDb.stream().filter(bom -> bom.getResourceType() == 0).map(Bom::getResourceId).collect(Collectors.toList());
         List<String> machineResourceIdList = bomListFromDb.stream().filter(bom -> bom.getResourceType() == 1).map(Bom::getResourceId).collect(Collectors.toList());
-        List<GroupResource> groupResourceList = resourceRepository.findAllById(groupResourceIdList).stream().map(resource -> new GroupResource(resource.getCount(), resource.getType(), getResourceShift(resource.getShiftCode()))).collect(Collectors.toList());
-        List<MachineResource> machineResourceList = resourceRepository.findAllById(machineResourceIdList).stream().map(resource -> new MachineResource(resource.getCount(), resource.getType(), getResourceShift(resource.getShiftCode()))).collect(Collectors.toList());
+        List<GroupResource> groupResourceList = resourceRepository.findAllById(groupResourceIdList).stream().map(resource -> new GroupResource(resource.getCount(), resource.getId(), getResourceShift(resource.getShiftCode()))).collect(Collectors.toList());
+        List<MachineResource> machineResourceList = resourceRepository.findAllById(machineResourceIdList).stream().map(resource -> new MachineResource(resource.getCount(), resource.getId(), getResourceShift(resource.getShiftCode()))).collect(Collectors.toList());
 
         // 初始化timeslot
         List<Timeslot> timeslotList=getTimeslotData(currentTime,latestEndTime);

@@ -14,7 +14,7 @@ import java.util.Date;
 @Tag(name = "APS", description = "APS排程相关API")
 @CrossOrigin(maxAge = 3600)
 @RestController
-@RequestMapping("/aps")
+@RequestMapping("api/aps")
 public class APSController {
     @Operation(summary = "启动排程")
     @Log("启动排程")

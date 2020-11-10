@@ -19,7 +19,7 @@ public class Resource {
     private int capacity;
     protected String name;
     protected Shift shift;
-    protected String type;
+    protected String type="undefined";
 
     @Override
     public boolean equals(Object obj) {
@@ -29,9 +29,5 @@ public class Resource {
     @Override
     public int hashCode() {
         return name.hashCode();
-    }
-
-    public String getType(){
-        return "undefined";
     }
 }

@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderProduceItem {
+public class ResourceProduceItem {
     @Schema(example = "line01",description = "资源名")
     private String resource;
     @Schema(example = "[4120934,,,,,,1303533,,4120934,4120934,,,,,,,,4120934,4120934,,,,,]",description = "此资源在给定date对应的24小时分别生产什么订单")

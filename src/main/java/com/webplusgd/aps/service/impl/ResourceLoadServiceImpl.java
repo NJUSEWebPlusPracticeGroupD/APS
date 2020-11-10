@@ -1,20 +1,17 @@
 package com.webplusgd.aps.service.impl;
 
 import com.webplusgd.aps.optaplanner.OptaPlanner;
-import com.webplusgd.aps.optaplanner.Planner;
 import com.webplusgd.aps.optaplanner.ScheduledTask;
 import com.webplusgd.aps.service.ResourceLoadService;
 import com.webplusgd.aps.utils.DateUtil;
 import com.webplusgd.aps.vo.ResourceLoadChart;
-import optaplanner.domain.Shift;
+import com.webplusgd.aps.vo.ResourceLoadItem;
 import optaplanner.domain.resource.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.time.chrono.ChronoLocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -24,6 +21,8 @@ import java.util.stream.Collectors;
  */
 @Service("ResourceLoadService")
 public class ResourceLoadServiceImpl implements ResourceLoadService {
+    private static final Integer GROUP_WORK_TIME = 12;
+    private static final Integer MACHINE_WORK_TIME = 24;
     @Autowired
     private OptaPlanner planner;
 
@@ -38,15 +37,33 @@ public class ResourceLoadServiceImpl implements ResourceLoadService {
         List<ScheduledTask> amongResult = output.stream().filter(o -> o.getTimeslot().getStartDateTime().isAfter(startDateTime)
                 && endDateTime.isAfter(o.getTimeslot().getEndDateTime()))
                 .collect(Collectors.toList());
+        // <资源,每天工作时间列表>对应关系
         HashMap<Resource, List<Integer>> resourceWorkTime = new HashMap<>();
         for (ScheduledTask task : amongResult) {
             resourceWorkTime.putIfAbsent(task.getResource(), Arrays.asList(0, 0, 0, 0, 0, 0, 0));
             List<Integer> workTimeList = resourceWorkTime.get(task.getResource());
-            if (Shift.DAY_SHIFT.equals(task.getResource().getShift())) {
-                int dayIndex = (int) DateUtil.daysDiff(task.getTimeslot().getStartDateTime(), startDateTime);
-                workTimeList.set(dayIndex, (int) (workTimeList.get(dayIndex)+task.getTimeslot().getDurationOfHours()));
-            }
+            int dayIndex = (int) DateUtil.daysDiff(task.getTimeslot().getStartDateTime(), startDateTime);
+            workTimeList.set(dayIndex, (int) (workTimeList.get(dayIndex) + task.getTimeslot().getDurationOfHours()));
         }
-        return new ResourceLoadChart();
+        List<ResourceLoadItem> resourceLoadItemList = new ArrayList<>();
+        int humanWorkTime = 0, humanTime = 0;
+        int machineWorkTime = 0, machineTime = 0;
+        for (Map.Entry<Resource, List<Integer>> entry : resourceWorkTime.entrySet()) {
+            Resource currentResource = entry.getKey();
+            List<Integer> workTime = entry.getValue();
+            List<Double> rates = new ArrayList<>();
+            if ("Group".equals(currentResource.getType())) {
+                rates = workTime.stream().map(o -> o * 1.0 / (currentResource.getCapacity() * GROUP_WORK_TIME)).collect(Collectors.toList());
+                humanWorkTime += workTime.stream().mapToInt(t -> t).sum();
+                humanTime += currentResource.getCapacity() * GROUP_WORK_TIME * 7;
+            } else {
+                rates = workTime.stream().map(o -> o * 1.0 / (currentResource.getCapacity() * MACHINE_WORK_TIME)).collect(Collectors.toList());
+                machineWorkTime += workTime.stream().mapToInt(t -> t).sum();
+                machineTime += currentResource.getCapacity() * MACHINE_WORK_TIME * 7;
+            }
+            resourceLoadItemList.add(new ResourceLoadItem(DateUtil.date2LocalDate(startDate), currentResource.getName(), rates));
+        }
+        return new ResourceLoadChart(humanWorkTime * 1.0 / humanTime,
+                machineWorkTime * 1.0 / machineTime, DateUtil.date2LocalDate(startDate), resourceLoadItemList);
     }
 }

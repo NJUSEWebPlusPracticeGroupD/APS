@@ -1,9 +1,6 @@
 package com.webplusgd.aps.utils;
 
-import java.time.Duration;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.*;
 import java.util.Date;
 
 /**
@@ -13,6 +10,9 @@ import java.util.Date;
 public class DateUtil {
     public static LocalDateTime date2LocalDateTime(Date date){
         return Instant.ofEpochMilli(date.getTime()).atZone(ZoneId.systemDefault()).toLocalDateTime();
+    }
+    public static LocalDate date2LocalDate(Date date){
+        return Instant.ofEpochMilli(date.getTime()).atZone(ZoneId.systemDefault()).toLocalDate();
     }
 
     public static boolean isAfter(LocalDateTime date1,Date date2){

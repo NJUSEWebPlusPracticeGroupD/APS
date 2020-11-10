@@ -35,6 +35,26 @@ public class OrderGattChartService implements OrderGanttChartService {
         }
     }
 
+    private void getTraitsOfHours(List<TraitsOfHour> traitsOfHours, ScheduledTask scheduledTask) {
+        int index = -1;
+        for (int i = 0; i < traitsOfHours.size(); i++) {
+            if (traitsOfHours.get(i).equals(scheduledTask.getOrder().getStartTime())) {
+                index = i;
+                break;
+            }
+        }
+        if (index == -1) {
+            TraitsOfHour traitsOfHour = new TraitsOfHour();
+            traitsOfHour.setDate(DateUtil.localDateTime2Date(scheduledTask.getOrder().getStartTime()));
+            traitsOfHour.setResourceNum(scheduledTask.getResource().getCapacity());
+            traitsOfHour.setStandardCapacity(scheduledTask.getOrder().getProduct().getStandardCapacity());
+            traitsOfHour.setMinimumStaff(scheduledTask.getOrder().getProduct().getMinimumStaff());
+            traitsOfHours.add(traitsOfHour);
+        } else {
+            traitsOfHours.get(index).setResourceNum(traitsOfHours.get(index).getResourceNum() + scheduledTask.getResource().getCapacity());
+        }
+    }
+
     @Override
     public ResponseVO<ArrayList<OrderGanttItem>> getOrderGanttChart(Date date) {
         try {
@@ -51,40 +71,31 @@ public class OrderGattChartService implements OrderGanttChartService {
 
             LocalDateTime dueDate = DateUtil.date2LocalDateTime(date).plusDays(1);
             for (Integer orderId : orderIds) {
-                long achieved = 0, goal = 1;
+                long achieved = 0, goal = 1, todo = 0;
 
-                List<TraitsOfHour> traitsOfHours = new ArrayList<>();
+                List<TraitsOfHour> achievedTraitsOfHours = new ArrayList<>();
+                List<TraitsOfHour> todoTraitsOfHours = new ArrayList<>();
                 for (ScheduledTask scheduledTask : scheduledTasks) {
                     if (orderId == scheduledTask.getOrder().getOrderId()) {
                         if (scheduledTask.getOrder().getFinishTime().isBefore(dueDate)) {
-                            int index = -1;
-                            for (int i = 0; i < traitsOfHours.size(); i++) {
-                                if (traitsOfHours.get(i).equals(scheduledTask.getOrder().getStartTime())) {
-                                    index = i;
-                                    break;
-                                }
-                            }
-                            if (index == -1) {
-                                TraitsOfHour traitsOfHour = new TraitsOfHour();
-                                traitsOfHour.setDate(DateUtil.localDateTime2Date(scheduledTask.getOrder().getStartTime()));
-                                traitsOfHour.setResourceNum(scheduledTask.getResource().getCapacity());
-                                traitsOfHour.setStandardCapacity(scheduledTask.getOrder().getProduct().getStandardCapacity());
-                                traitsOfHour.setMinimumStaff(scheduledTask.getOrder().getProduct().getMinimumStaff());
-                                traitsOfHours.add(traitsOfHour);
-                            } else {
-                                traitsOfHours.get(index).setResourceNum(traitsOfHours.get(index).getResourceNum() + scheduledTask.getResource().getCapacity());
-                            }
+                            getTraitsOfHours(achievedTraitsOfHours, scheduledTask);
+                        } else if (dueDate.isBefore(scheduledTask.getOrder().getStartTime()) && scheduledTask.getOrder().getFinishTime().isBefore(scheduledTask.getOrder().getTermOfDeliver())) {
+                            getTraitsOfHours(todoTraitsOfHours, scheduledTask);
                         }
 
                         goal = scheduledTask.getOrder().getOrderNum();
                     }
                 }
-                for (TraitsOfHour traitsOfHour : traitsOfHours) {
-                    achieved += traitsOfHour.getResourceNum() * traitsOfHour.getStandardCapacity() / traitsOfHour.getMinimumStaff();
+                for (TraitsOfHour achievedTraitsOfHour : achievedTraitsOfHours) {
+                    achieved += achievedTraitsOfHour.getResourceNum() * achievedTraitsOfHour.getStandardCapacity() / achievedTraitsOfHour.getMinimumStaff();
+                }
+                for (TraitsOfHour todoTraitsOfHour : todoTraitsOfHours) {
+                    todo += todoTraitsOfHour.getResourceNum() * todoTraitsOfHour.getStandardCapacity() / todoTraitsOfHour.getMinimumStaff();
                 }
 
                 int progress = (int) (achieved / goal);
-                OrderGanttItem orderGanttItem = new OrderGanttItem(Integer.toString(orderId), progress, 100 - progress);
+                int progressDelay = (int) (todo / goal);
+                OrderGanttItem orderGanttItem = new OrderGanttItem(Integer.toString(orderId), progress, progressDelay);
                 orderGanttItems.add(orderGanttItem);
             }
 

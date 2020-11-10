@@ -6,6 +6,7 @@ import com.webplusgd.aps.service.OrderGanttChartService;
 import com.webplusgd.aps.utils.DateUtil;
 import com.webplusgd.aps.vo.OrderGanttItem;
 import com.webplusgd.aps.vo.ResponseVO;
+import lombok.Data;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -22,6 +23,18 @@ public class OrderGattChartService implements OrderGanttChartService {
         this.optaPlanner = optaPlanner;
     }
 
+    @Data
+    static class TraitsOfHour {
+        Date date;
+        int resourceNum = 0;
+        int standardCapacity;
+        int minimumStaff;
+
+        boolean equals(LocalDateTime dateTime) {
+            return date.equals(DateUtil.localDateTime2Date(dateTime));
+        }
+    }
+
     @Override
     public ResponseVO<ArrayList<OrderGanttItem>> getOrderGanttChart(Date date) {
         try {
@@ -36,28 +49,40 @@ public class OrderGattChartService implements OrderGanttChartService {
                 }
             }
 
-            LocalDateTime currentDate = DateUtil.date2LocalDateTime(date);
-            // 对于每个 order
+            LocalDateTime dueDate = DateUtil.date2LocalDateTime(date).plusDays(1);
             for (Integer orderId : orderIds) {
                 int achieved = 0, goal = 1;
-                boolean firstScan = true;
-                // 遍历一遍排程计划表，累加得到截止指定日期的生产量
+
+                List<TraitsOfHour> traitsOfHours = new ArrayList<>();
                 for (ScheduledTask scheduledTask : scheduledTasks) {
                     if (orderId == scheduledTask.getOrder().getOrderId()) {
-                        if (scheduledTask.getOrder().getFinishTime().isBefore(currentDate)) {
-                            // 若排程的结束日期在指定日期之前，说明已完成，直接与排程的总生产量相加
-                            achieved += scheduledTask.getTimeslot().getDurationOfHours() * scheduledTask.getOrder().getProduct().getStandardCapacity();
-                        } else if (scheduledTask.getOrder().getStartTime().isBefore(currentDate)) {
-                            // 否则，若排程的开始日期在指定日期之前，说明正在进行但未完成，与该排程中截止指定日期的生产量相加
-                            achieved += DateUtil.hoursDiff(scheduledTask.getOrder().getStartTime(), currentDate) * scheduledTask.getOrder().getProduct().getStandardCapacity();
+                        if (scheduledTask.getOrder().getFinishTime().isBefore(dueDate)) {
+                            int index = -1;
+                            for (int i = 0; i < traitsOfHours.size(); i++) {
+                                if (traitsOfHours.get(i).equals(scheduledTask.getOrder().getStartTime())) {
+                                    index = i;
+                                    break;
+                                }
+                            }
+                            if (index == -1) {
+                                TraitsOfHour traitsOfHour = new TraitsOfHour();
+                                traitsOfHour.setDate(DateUtil.localDateTime2Date(scheduledTask.getOrder().getStartTime()));
+                                traitsOfHour.setResourceNum(scheduledTask.getResource().getCapacity());
+                                traitsOfHour.setStandardCapacity(scheduledTask.getOrder().getProduct().getStandardCapacity());
+                                traitsOfHour.setMinimumStaff(scheduledTask.getOrder().getProduct().getMinimumStaff());
+                                traitsOfHours.add(traitsOfHour);
+                            } else {
+                                traitsOfHours.get(index).setResourceNum(traitsOfHours.get(index).getResourceNum() + scheduledTask.getResource().getCapacity());
+                            }
                         }
 
-                        if (firstScan) {
-                            goal = scheduledTask.getOrder().getOrderNum();
-                            firstScan = false;
-                        }
+                        goal = scheduledTask.getOrder().getOrderNum();
                     }
                 }
+                for (TraitsOfHour traitsOfHour : traitsOfHours) {
+                    achieved += traitsOfHour.getResourceNum() * traitsOfHour.getStandardCapacity() / traitsOfHour.getMinimumStaff();
+                }
+
                 int progress = achieved / goal;
                 OrderGanttItem orderGanttItem = new OrderGanttItem(Integer.toString(orderId), progress, 100 - progress);
                 orderGanttItems.add(orderGanttItem);
@@ -69,4 +94,5 @@ public class OrderGattChartService implements OrderGanttChartService {
             return ResponseVO.buildFailure("获取订单甘特图失败！");
         }
     }
+
 }

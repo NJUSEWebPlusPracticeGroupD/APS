@@ -37,8 +37,8 @@ public interface FormApi {
             @DateTimeFormat(pattern = "yyyy-MM-dd", iso = DateTimeFormat.ISO.DATE)
             @Parameter(description = "当前查看日期", example = "2018-09-10")
             @RequestParam Date date,
-            @Parameter(description = "要查询的哪个订单的生产单", example = "2018-09-10")
-            @RequestParam Integer orderId
+            @Parameter(description = "要查询的哪个订单的生产单", example = "414031（普通订单）/414031-1（414031的第一个子订单）")
+            @RequestParam String orderId
             );
 
     /**

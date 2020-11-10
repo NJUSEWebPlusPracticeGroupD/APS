@@ -8,5 +8,5 @@ import java.util.ArrayList;
 import java.util.Date;
 @Component
 public interface OrderProduceRelationFormService {
-    ResponseVO<ArrayList<ResourceProduceItem>> getOrderProduceRelationForm(Date date, Integer orderId);
+    ResponseVO<ArrayList<ResourceProduceItem>> getOrderProduceRelationForm(Date date, String orderId);
 }

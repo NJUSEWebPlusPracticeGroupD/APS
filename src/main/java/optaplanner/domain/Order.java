@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 public class Order {
     private int orderId;
     private Product product;
-    private int orderNum;
+    private long orderNum;
     private LocalDateTime termOfDeliver;
     /**
      * 订单开始排程的时间

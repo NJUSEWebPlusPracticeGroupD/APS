@@ -16,7 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Product {
-    private String materialId;
+    private Integer materialId;
     private List<GroupResource> availableGroupResource;
     private List<MachineResource> availableMachineResource;
     private int standardCapacity;

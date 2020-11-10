@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 public class ResourceLoadServiceImpl implements ResourceLoadService {
     private static final Integer GROUP_WORK_TIME = 12;
     private static final Integer MACHINE_WORK_TIME = 24;
+    private static final Integer DAY_RANGE_LENGTH = 7;
     @Autowired
     private OptaPlanner planner;
 
@@ -32,7 +33,7 @@ public class ResourceLoadServiceImpl implements ResourceLoadService {
         List<ScheduledTask> output = planner.getPlan(new Timestamp(System.currentTimeMillis()));
         // 从指定日期的7点开始计算
         LocalDateTime startDateTime = DateUtil.date2LocalDateTime(startDate).plusHours(7);
-        LocalDateTime endDateTime = startDateTime.plusDays(7);
+        LocalDateTime endDateTime = startDateTime.plusDays(DAY_RANGE_LENGTH);
         // 取出指定日期一周内的生产任务
         List<ScheduledTask> amongResult = output.stream().filter(o -> o.getTimeslot().getStartDateTime().isAfter(startDateTime)
                 && endDateTime.isAfter(o.getTimeslot().getEndDateTime()))
@@ -55,11 +56,11 @@ public class ResourceLoadServiceImpl implements ResourceLoadService {
             if ("Group".equals(currentResource.getType())) {
                 rates = workTime.stream().map(o -> o * 1.0 / (currentResource.getCapacity() * GROUP_WORK_TIME)).collect(Collectors.toList());
                 humanWorkTime += workTime.stream().mapToInt(t -> t).sum();
-                humanTime += currentResource.getCapacity() * GROUP_WORK_TIME * 7;
+                humanTime += currentResource.getCapacity() * GROUP_WORK_TIME * DAY_RANGE_LENGTH;
             } else {
                 rates = workTime.stream().map(o -> o * 1.0 / (currentResource.getCapacity() * MACHINE_WORK_TIME)).collect(Collectors.toList());
                 machineWorkTime += workTime.stream().mapToInt(t -> t).sum();
-                machineTime += currentResource.getCapacity() * MACHINE_WORK_TIME * 7;
+                machineTime += currentResource.getCapacity() * MACHINE_WORK_TIME * DAY_RANGE_LENGTH;
             }
             resourceLoadItemList.add(new ResourceLoadItem(DateUtil.date2LocalDate(startDate), currentResource.getName(), rates));
         }

@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 public class OrderResourceItem {
     @Schema(example = "421093",description = "订单号")
-    private Integer orderId;
+    private String orderId;
     @Schema(example = "[\"line01\",\"21组-陈荷花（4）\",\"36组-谢春霞（4）\"]",description = "此订单在整个生产过程中所用的资源列表")
     private List<String> usedResources;
 }

@@ -51,7 +51,7 @@ public class OrderGattChartService implements OrderGanttChartService {
 
             LocalDateTime dueDate = DateUtil.date2LocalDateTime(date).plusDays(1);
             for (Integer orderId : orderIds) {
-                int achieved = 0, goal = 1;
+                long achieved = 0, goal = 1;
 
                 List<TraitsOfHour> traitsOfHours = new ArrayList<>();
                 for (ScheduledTask scheduledTask : scheduledTasks) {
@@ -83,7 +83,7 @@ public class OrderGattChartService implements OrderGanttChartService {
                     achieved += traitsOfHour.getResourceNum() * traitsOfHour.getStandardCapacity() / traitsOfHour.getMinimumStaff();
                 }
 
-                int progress = achieved / goal;
+                int progress = (int) (achieved / goal);
                 OrderGanttItem orderGanttItem = new OrderGanttItem(Integer.toString(orderId), progress, 100 - progress);
                 orderGanttItems.add(orderGanttItem);
             }

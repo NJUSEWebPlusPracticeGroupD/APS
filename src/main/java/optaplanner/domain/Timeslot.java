@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 
 /**
@@ -18,4 +19,7 @@ public class Timeslot {
     private LocalDateTime startDateTime;
     private LocalDateTime endDateTime;
 
+    public long getDurationOfHours(){
+        return Duration.between(startDateTime,endDateTime).toHours();
+    }
 }

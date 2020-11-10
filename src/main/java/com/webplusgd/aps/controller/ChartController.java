@@ -7,7 +7,6 @@ import com.webplusgd.aps.vo.ResourceGanttItem;
 import com.webplusgd.aps.vo.ResourceLoadChart;
 import com.webplusgd.aps.vo.ResponseVO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -41,12 +40,6 @@ public class ChartController implements ChartApi {
     public ResponseVO<ResourceLoadChart> getResourceLoadChart(@RequestParam Date startDate) {
 
         return ResponseVO.buildSuccess(resourceLoadService.getResourceLoadChart(startDate));
-    }
-
-    @RequestMapping(value = "/test", method = RequestMethod.GET)
-    public ResponseVO testConnection(@RequestParam String testStr){
-        System.out.println("backend success! " + testStr);
-        return ResponseVO.buildSuccess("frontend success!" + testStr);
     }
 
 

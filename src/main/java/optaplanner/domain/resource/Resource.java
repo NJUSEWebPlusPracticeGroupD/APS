@@ -15,4 +15,18 @@ import lombok.NoArgsConstructor;
 public class Resource {
     protected String name;
     protected Shift shift;
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Resource && name.equals(((Resource) obj).name);
+    }
+
+    @Override
+    public int hashCode() {
+        return name.hashCode();
+    }
+
+    public String getType(){
+        return "undefined";
+    }
 }

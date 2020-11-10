@@ -35,4 +35,8 @@
     <changeSet id="bom-02" author="toby">
         <modifyDataType tableName="bom" columnName="resource_id" newDataType="varchar(255)"/>
     </changeSet>
+    
+    <changeSet id="bom-03" author="rollingegg">
+        <setColumnRemarks tableName="bom" columnName="craft" remarks="所属工艺名称（装配、测试等）"/>
+    </changeSet>
 </databaseChangeLog>

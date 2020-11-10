@@ -256,6 +256,8 @@ public class WSImport2DB implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
         try {
+//            log.info("清空原来的数据库中······");
+//            truncateTable();
 //            log.info("Web Service导入数据库中······");
 //            wsImport();
         } catch (Exception e) {
@@ -266,5 +268,12 @@ public class WSImport2DB implements ApplicationRunner {
             // 关闭APS系统
             context.close();
         }
+    }
+
+    private void truncateTable(){
+        orderRepository.truncateTable();
+        bomRepository.truncateTable();
+        resourceRepository.truncateTable();
+        shiftRepository.truncateTable();
     }
 }

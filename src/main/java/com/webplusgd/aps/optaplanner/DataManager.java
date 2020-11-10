@@ -13,13 +13,11 @@ import optaplanner.domain.Task;
 import optaplanner.domain.Timeslot;
 import optaplanner.domain.resource.GroupResource;
 import optaplanner.domain.resource.MachineResource;
-import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,6 +29,7 @@ import java.util.stream.Collectors;
 @Component
 public class DataManager {
     private static final Integer DAY_RANGE_LENGTH = 7;
+    private static final String SELECTED_CRAFT = "装配";
     private OrderRepository orderRepository;
 
     private ResourceRepository resourceRepository;
@@ -57,24 +56,25 @@ public class DataManager {
         List<Order> orderListFromDb = orderRepository.findAll();
         // 组装成对应Order的关系
         List<optaplanner.domain.Order> orderList = new ArrayList<>();
-        LocalDateTime latestEndTime=currentTime;
+        LocalDateTime latestEndTime = currentTime;
         for (Order orderFromDb : orderListFromDb) {
             List<Bom> order2BomFromDb = bomRepository.findByMaterialId(orderFromDb.getMaterialId());
-            if (order2BomFromDb.size()==0){
+            if (order2BomFromDb.size() == 0) {
                 continue;
             }
+            order2BomFromDb = order2BomFromDb.stream().filter(bom -> SELECTED_CRAFT.equals(bom.getCraft())).collect(Collectors.toList());
             //  取所需资源
             List<String> groupResourceIdList = order2BomFromDb.stream().filter(bom -> bom.getResourceType() == 0).map(Bom::getResourceId).collect(Collectors.toList());
             List<String> machineResourceIdList = order2BomFromDb.stream().filter(bom -> bom.getResourceType() == 1).map(Bom::getResourceId).collect(Collectors.toList());
             List<GroupResource> groupResourceList = resourceRepository.findAllById(groupResourceIdList).stream().map(resource -> new GroupResource(resource.getCount(), resource.getId(), getResourceShift(resource.getShiftCode()))).collect(Collectors.toList());
             List<MachineResource> machineResourceList = resourceRepository.findAllById(machineResourceIdList).stream().map(resource -> new MachineResource(resource.getCount(), resource.getId(), getResourceShift(resource.getShiftCode()))).collect(Collectors.toList());
-            optaplanner.domain.Order tmpOrder=new optaplanner.domain.Order(orderFromDb.getOrderId(),
+            optaplanner.domain.Order tmpOrder = new optaplanner.domain.Order(orderFromDb.getOrderId(),
                     new Product(orderFromDb.getMaterialId(), groupResourceList, machineResourceList, order2BomFromDb.get(0).getQuota(), order2BomFromDb.get(0).getCapacity()), orderFromDb.getOrderCount(),
                     DateUtil.date2LocalDateTime(orderFromDb.getDeliveryDate()),
                     null, null);
             orderList.add(tmpOrder);
-            if (latestEndTime.isBefore(tmpOrder.getTermOfDeliver())){
-                latestEndTime=tmpOrder.getTermOfDeliver();
+            if (latestEndTime.isBefore(tmpOrder.getTermOfDeliver())) {
+                latestEndTime = tmpOrder.getTermOfDeliver();
             }
         }
         latestEndTime.plusDays(DAY_RANGE_LENGTH);
@@ -88,14 +88,14 @@ public class DataManager {
         List<MachineResource> machineResourceList = resourceRepository.findAllById(machineResourceIdList).stream().map(resource -> new MachineResource(resource.getCount(), resource.getId(), getResourceShift(resource.getShiftCode()))).collect(Collectors.toList());
 
         // 初始化timeslot
-        List<Timeslot> timeslotList=getTimeslotData(currentTime,latestEndTime);
+        List<Timeslot> timeslotList = getTimeslotData(currentTime, latestEndTime);
         // 初始化Task分配实体
-        int taskListSize=timeslotList.size()*groupResourceList.size();
-        List<Task> taskList=new ArrayList<>(taskListSize);
+        int taskListSize = timeslotList.size() * groupResourceList.size();
+        List<Task> taskList = new ArrayList<>(taskListSize);
         for (int i = 0; i < taskListSize; i++) {
             taskList.add(new Task());
         }
-        return new ApsSolution(orderList,groupResourceList,machineResourceList,timeslotList,taskList);
+        return new ApsSolution(orderList, groupResourceList, machineResourceList, timeslotList, taskList);
     }
 
     private List<Timeslot> getTimeslotData(LocalDateTime beginTime, LocalDateTime endTime) {

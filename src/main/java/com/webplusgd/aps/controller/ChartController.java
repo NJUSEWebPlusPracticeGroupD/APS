@@ -45,14 +45,7 @@ public class ChartController implements ChartApi {
     @Override
     @GetMapping("/getResourceLoadChart")
     public ResponseVO<ResourceLoadChart> getResourceLoadChart(@RequestParam Date startDate) {
-
         return ResponseVO.buildSuccess(resourceLoadService.getResourceLoadChart(startDate));
-    }
-
-    @RequestMapping(value = "/test", method = RequestMethod.GET)
-    public ResponseVO testConnection(@RequestParam String testStr) {
-        System.out.println("backend success! " + testStr);
-        return ResponseVO.buildSuccess("frontend success!" + testStr);
     }
 
 }

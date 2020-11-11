@@ -1,12 +1,13 @@
 package com.webplusgd.aps.service.impl;
 
+import com.webplusgd.aps.exception.NoPlanException;
 import com.webplusgd.aps.optaplanner.OptaPlanner;
 import com.webplusgd.aps.optaplanner.ScheduledTask;
 import com.webplusgd.aps.service.ResourceLoadService;
 import com.webplusgd.aps.utils.DateUtil;
 import com.webplusgd.aps.vo.ResourceLoadChart;
 import com.webplusgd.aps.vo.ResourceLoadItem;
-import optaplanner.domain.resource.Resource;
+import com.webplusgd.aps.optaplanner.domain.resource.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,9 +29,12 @@ public class ResourceLoadServiceImpl implements ResourceLoadService {
     private OptaPlanner planner;
 
     @Override
-    public ResourceLoadChart getResourceLoadChart(Date startDate) {
+    public ResourceLoadChart getResourceLoadChart(Date startDate) throws NoPlanException {
         // TODO 返回资源负载图
-        List<ScheduledTask> output = planner.getPlan(new Timestamp(System.currentTimeMillis()));
+        List<ScheduledTask> output = planner.tryGetPlan();
+        if (output==null){
+            throw new NoPlanException("获取资源负载图失败");
+        }
         // 从指定日期的7点开始计算
         LocalDateTime startDateTime = DateUtil.date2LocalDateTime(startDate).plusHours(7);
         LocalDateTime endDateTime = startDateTime.plusDays(DAY_RANGE_LENGTH);

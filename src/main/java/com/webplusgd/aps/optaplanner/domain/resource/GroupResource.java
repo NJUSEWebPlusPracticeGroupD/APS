@@ -1,10 +1,7 @@
-package optaplanner.domain.resource;
+package com.webplusgd.aps.optaplanner.domain.resource;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import optaplanner.domain.Shift;
+import com.webplusgd.aps.optaplanner.domain.Shift;
 
 /**
  * @author Rollingegg

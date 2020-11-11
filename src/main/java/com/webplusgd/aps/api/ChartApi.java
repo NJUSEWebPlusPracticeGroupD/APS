@@ -1,6 +1,7 @@
 package com.webplusgd.aps.api;
 
 import com.webplusgd.aps.annotation.Log;
+import com.webplusgd.aps.exception.NoPlanException;
 import com.webplusgd.aps.vo.OrderGanttItem;
 import com.webplusgd.aps.vo.ResourceGanttItem;
 import com.webplusgd.aps.vo.ResourceLoadChart;
@@ -56,5 +57,5 @@ public interface ChartApi {
     ResponseVO<ResourceLoadChart> getResourceLoadChart(
             @DateTimeFormat(pattern = "yyyy-MM-dd", iso = DateTimeFormat.ISO.DATE)
             @Parameter(description = "当前查看日期", example = "2018-09-10")
-            @RequestParam Date startDate);
+            @RequestParam Date startDate) throws NoPlanException;
 }

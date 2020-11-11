@@ -1,6 +1,6 @@
-package optaplanner.domain.resource;
+package com.webplusgd.aps.optaplanner.domain.resource;
 
-import optaplanner.domain.Shift;
+import com.webplusgd.aps.optaplanner.domain.Shift;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -29,5 +29,10 @@ public class Resource {
     @Override
     public int hashCode() {
         return name.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return name;
     }
 }

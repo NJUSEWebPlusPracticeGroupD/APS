@@ -1,5 +1,6 @@
 package com.webplusgd.aps.service;
 
+import com.webplusgd.aps.exception.NoPlanException;
 import com.webplusgd.aps.vo.ResourceLoadChart;
 
 import java.util.Date;
@@ -11,5 +12,5 @@ public interface ResourceLoadService {
      * @param startDate 开始日期
      * @return 资源负载图
      */
-    ResourceLoadChart getResourceLoadChart(Date startDate);
+    ResourceLoadChart getResourceLoadChart(Date startDate) throws NoPlanException;
 }

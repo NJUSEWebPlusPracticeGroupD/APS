@@ -1,6 +1,7 @@
 package com.webplusgd.aps.controller;
 
 import com.webplusgd.aps.api.ChartApi;
+import com.webplusgd.aps.exception.NoPlanException;
 import com.webplusgd.aps.service.ResourceLoadService;
 import com.webplusgd.aps.service.OrderGanttChartService;
 import com.webplusgd.aps.service.ResourceGanttChartService;
@@ -43,7 +44,7 @@ public class ChartController implements ChartApi {
 
     @Override
     @GetMapping("/getResourceLoadChart")
-    public ResponseVO<ResourceLoadChart> getResourceLoadChart(@RequestParam Date startDate) {
+    public ResponseVO<ResourceLoadChart> getResourceLoadChart(@RequestParam Date startDate) throws NoPlanException {
         return ResponseVO.buildSuccess(resourceLoadService.getResourceLoadChart(startDate));
     }
 

@@ -14,12 +14,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@Service
-public class OrderGattChartService implements OrderGanttChartService {
+@Service("OrderGanttChartService")
+public class OrderGattChartServiceImpl implements OrderGanttChartService {
 
     private final OptaPlanner optaPlanner;
 
-    public OrderGattChartService(OptaPlanner optaPlanner) {
+    public OrderGattChartServiceImpl(OptaPlanner optaPlanner) {
         this.optaPlanner = optaPlanner;
     }
 

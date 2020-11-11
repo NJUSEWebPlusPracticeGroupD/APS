@@ -4,15 +4,23 @@
     <!--<environmentMode>FULL_ASSERT</environmentMode>--><!-- To slowly prove there are no bugs in this code -->
     <!--<moveThreadCount>AUTO</moveThreadCount>--><!-- To solve faster by saturating multiple CPU cores -->
 
-    <solutionClass>optaplanner.ApsSolution</solutionClass>
-    <entityClass>optaplanner.domain.Task</entityClass>
+    <constructionHeuristic>
+        <!--从池分配-->
+        <!--将所有实体-值组合放入池中。-->
+        <!--将最佳实体分配给最佳价值。-->
+        <!--重复直到分配了所有实体。-->
+        <constructionHeuristicType>ALLOCATE_FROM_POOL</constructionHeuristicType>
+        <entitySorterManner>DECREASING_DIFFICULTY_IF_AVAILABLE</entitySorterManner>
+        <valueSorterManner>INCREASING_STRENGTH_IF_AVAILABLE</valueSorterManner>
+    </constructionHeuristic>
+    <solutionClass>com.webplusgd.aps.optaplanner.ApsSolution</solutionClass>
+    <entityClass>com.webplusgd.aps.optaplanner.domain.Task</entityClass>
 
     <scoreDirectorFactory>
-        <constraintProviderClass>optaplanner.solver.score.ApsConstraintProvider
-        </constraintProviderClass>
+        <constraintProviderClass>com.webplusgd.aps.optaplanner.score.ApsConstraintProvider</constraintProviderClass>
     </scoreDirectorFactory>
 
-    <termination>
-        <minutesSpentLimit>5</minutesSpentLimit>
-    </termination>
+    <!--    <termination>-->
+    <!--        <spentLimit>PT5S</spentLimit>-->
+    <!--    </termination>-->
 </solver>

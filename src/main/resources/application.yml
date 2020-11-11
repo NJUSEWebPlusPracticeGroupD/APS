@@ -88,12 +88,12 @@ springdoc:
 logging:
   level:
     org:
-      optaplanner: info
-optaplanner:
-  solver:
-    termination:
-      spent-limit: 5s
-  solver-config-xml: optaplanner/timetable/TimeTableScoreConfig.xml
+      optaplanner: debug
+#optaplanner:
+#  solver:
+#    termination:
+#      spent-limit: 5s
+#  solver-config-xml: optaplanner/solver/ApsConfig.xml
 
 ---
 spring:

@@ -13,12 +13,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@Service
-public class ResourceGattChartService implements ResourceGanttChartService {
+@Service("ResourceGanttChartService")
+public class ResourceGattChartServiceImpl implements ResourceGanttChartService {
 
     private final OptaPlanner optaPlanner;
 
-    public ResourceGattChartService(OptaPlanner optaPlanner) {
+    public ResourceGattChartServiceImpl(OptaPlanner optaPlanner) {
         this.optaPlanner = optaPlanner;
     }
 

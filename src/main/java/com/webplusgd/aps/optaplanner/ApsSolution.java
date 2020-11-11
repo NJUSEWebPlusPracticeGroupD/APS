@@ -1,13 +1,12 @@
-package optaplanner;
+package com.webplusgd.aps.optaplanner;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import optaplanner.domain.Order;
-import optaplanner.domain.Task;
-import optaplanner.domain.Timeslot;
-import optaplanner.domain.resource.GroupResource;
-import optaplanner.domain.resource.MachineResource;
+import com.webplusgd.aps.optaplanner.domain.Order;
+import com.webplusgd.aps.optaplanner.domain.Task;
+import com.webplusgd.aps.optaplanner.domain.Timeslot;
+import com.webplusgd.aps.optaplanner.domain.resource.GroupResource;
+import com.webplusgd.aps.optaplanner.domain.resource.MachineResource;
 import org.optaplanner.core.api.domain.solution.PlanningEntityCollectionProperty;
 import org.optaplanner.core.api.domain.solution.PlanningScore;
 import org.optaplanner.core.api.domain.solution.PlanningSolution;
@@ -25,8 +24,8 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 public class ApsSolution {
-    @ValueRangeProvider(id = "orderRange")
-    @ProblemFactCollectionProperty
+//    @ValueRangeProvider(id = "orderRange")
+//    @ProblemFactCollectionProperty
     private List<Order> orderList;
 
     @ValueRangeProvider(id = "groupRange")

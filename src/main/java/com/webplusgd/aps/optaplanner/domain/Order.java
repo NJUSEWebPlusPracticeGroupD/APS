@@ -1,4 +1,4 @@
-package optaplanner.domain;
+package com.webplusgd.aps.optaplanner.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,4 +26,12 @@ public class Order {
      * 订单完成的时间
      */
     private LocalDateTime finishTime;
+
+    public int getRequiredPeople(){
+        return product.getMinimumStaff();
+    }
+
+    public boolean equals(Order other){
+        return orderId==other.orderId;
+    }
 }

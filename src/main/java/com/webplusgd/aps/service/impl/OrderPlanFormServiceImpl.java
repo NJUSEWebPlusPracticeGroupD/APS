@@ -2,11 +2,11 @@ package com.webplusgd.aps.service.impl;
 
 import com.webplusgd.aps.optaplanner.OptaPlanner;
 import com.webplusgd.aps.optaplanner.ScheduledTask;
+import com.webplusgd.aps.optaplanner.domain.Timeslot;
 import com.webplusgd.aps.service.OrderPlanFormService;
 import com.webplusgd.aps.vo.OrderPlanItem;
 import com.webplusgd.aps.vo.ResourceProduceItem;
 import com.webplusgd.aps.vo.ResponseVO;
-import optaplanner.domain.Timeslot;
 import org.springframework.stereotype.Component;
 
 import java.sql.Time;

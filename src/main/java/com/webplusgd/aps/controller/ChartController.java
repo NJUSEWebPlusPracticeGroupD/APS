@@ -5,10 +5,7 @@ import com.webplusgd.aps.exception.NoPlanException;
 import com.webplusgd.aps.service.ResourceLoadService;
 import com.webplusgd.aps.service.OrderGanttChartService;
 import com.webplusgd.aps.service.ResourceGanttChartService;
-import com.webplusgd.aps.vo.OrderGanttItem;
-import com.webplusgd.aps.vo.ResourceGanttItem;
-import com.webplusgd.aps.vo.ResourceLoadChart;
-import com.webplusgd.aps.vo.ResponseVO;
+import com.webplusgd.aps.vo.*;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -38,7 +35,7 @@ public class ChartController implements ChartApi {
 
     @Override
     @GetMapping("/getOrderGanttChart")
-    public ResponseVO<ArrayList<OrderGanttItem>> getOrderGanttChart(@RequestParam Date date) {
+    public ResponseVO<OrderGanttChart> getOrderGanttChart(@RequestParam Date date) {
         return orderGanttChartService.getOrderGanttChart(date);
     }
 

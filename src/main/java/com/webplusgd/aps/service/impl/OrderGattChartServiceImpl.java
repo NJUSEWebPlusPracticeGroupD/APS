@@ -5,6 +5,7 @@ import com.webplusgd.aps.optaplanner.ScheduledTask;
 import com.webplusgd.aps.service.OrderGanttChartService;
 import com.webplusgd.aps.utils.DateUtil;
 import com.webplusgd.aps.vo.OrderGanttItem;
+import com.webplusgd.aps.vo.OrderGanttChart;
 import com.webplusgd.aps.vo.ResponseVO;
 import lombok.Data;
 import org.springframework.stereotype.Service;
@@ -56,17 +57,19 @@ public class OrderGattChartServiceImpl implements OrderGanttChartService {
     }
 
     @Override
-    public ResponseVO<ArrayList<OrderGanttItem>> getOrderGanttChart(Date date) {
+    public ResponseVO<OrderGanttChart> getOrderGanttChart(Date date) {
         try {
             List<ScheduledTask> scheduledTasks = null;
             List<Integer> orderIds = new ArrayList<>();
             ArrayList<OrderGanttItem> orderGanttItems = new ArrayList<>();
+            int orderCount = 0, onTimeCount = 0;
 
             // 扫描排程计划表，记录所有订单 id
             for (ScheduledTask scheduledTask : scheduledTasks) {
                 if (!orderIds.contains(scheduledTask.getOrder().getOrderId())) {
                     orderIds.add(scheduledTask.getOrder().getOrderId());
                 }
+                orderCount++;
             }
 
             LocalDateTime dueDate = DateUtil.date2LocalDateTime(date).plusDays(1);
@@ -79,6 +82,7 @@ public class OrderGattChartServiceImpl implements OrderGanttChartService {
                     if (orderId == scheduledTask.getOrder().getOrderId()) {
                         if (scheduledTask.getOrder().getFinishTime().isBefore(dueDate)) {
                             getTraitsOfHours(achievedTraitsOfHours, scheduledTask);
+                            onTimeCount++;
                         } else if (dueDate.isBefore(scheduledTask.getOrder().getStartTime()) && scheduledTask.getOrder().getFinishTime().isBefore(scheduledTask.getOrder().getTermOfDeliver())) {
                             getTraitsOfHours(todoTraitsOfHours, scheduledTask);
                         }
@@ -99,7 +103,9 @@ public class OrderGattChartServiceImpl implements OrderGanttChartService {
                 orderGanttItems.add(orderGanttItem);
             }
 
-            return ResponseVO.buildSuccess(orderGanttItems);
+            double onTimeDelivery = onTimeCount * 1.0 / orderCount;
+            OrderGanttChart orderGanttChart = new OrderGanttChart(onTimeDelivery, orderGanttItems);
+            return ResponseVO.buildSuccess(orderGanttChart);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseVO.buildFailure("获取订单甘特图失败！");

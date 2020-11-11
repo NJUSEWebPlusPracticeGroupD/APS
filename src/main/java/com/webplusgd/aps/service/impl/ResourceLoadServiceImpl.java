@@ -1,6 +1,7 @@
 package com.webplusgd.aps.service.impl;
 
 import com.webplusgd.aps.exception.NoPlanException;
+import com.webplusgd.aps.optaplanner.FCFSPlanner;
 import com.webplusgd.aps.optaplanner.OptaPlanner;
 import com.webplusgd.aps.optaplanner.ScheduledTask;
 import com.webplusgd.aps.service.ResourceLoadService;
@@ -26,18 +27,18 @@ public class ResourceLoadServiceImpl implements ResourceLoadService {
     private static final Integer MACHINE_WORK_TIME = 24;
     private static final Integer DAY_RANGE_LENGTH = 7;
     @Autowired
-    private OptaPlanner planner;
+    private FCFSPlanner planner;
 
     @Override
     public ResourceLoadChart getResourceLoadChart(Date startDate) throws NoPlanException {
         // TODO 返回资源负载图
         List<ScheduledTask> output = planner.tryGetPlan();
-        if (output==null){
+        if (output == null) {
             throw new NoPlanException("获取资源负载图失败");
         }
-        // 从指定日期的7点开始计算
-        LocalDateTime startDateTime = DateUtil.date2LocalDateTime(startDate).plusHours(7);
-        LocalDateTime endDateTime = startDateTime.plusDays(DAY_RANGE_LENGTH);
+        // 从指定日期的7点开始计算(边界值取-1s/+1s)
+        LocalDateTime startDateTime = DateUtil.date2LocalDateTime(startDate).plusHours(7).minusSeconds(1);
+        LocalDateTime endDateTime = startDateTime.plusDays(DAY_RANGE_LENGTH).plusSeconds(2);
         // 取出指定日期一周内的生产任务
         List<ScheduledTask> amongResult = output.stream().filter(o -> o.getTimeslot().getStartDateTime().isAfter(startDateTime)
                 && endDateTime.isAfter(o.getTimeslot().getEndDateTime()))
@@ -47,7 +48,7 @@ public class ResourceLoadServiceImpl implements ResourceLoadService {
         for (ScheduledTask task : amongResult) {
             resourceWorkTime.putIfAbsent(task.getResource(), Arrays.asList(0, 0, 0, 0, 0, 0, 0));
             List<Integer> workTimeList = resourceWorkTime.get(task.getResource());
-            int dayIndex = (int) DateUtil.daysDiff(task.getTimeslot().getStartDateTime(), startDateTime);
+            int dayIndex = (int) DateUtil.daysDiff(startDateTime, task.getTimeslot().getStartDateTime());
             workTimeList.set(dayIndex, (int) (workTimeList.get(dayIndex) + task.getTimeslot().getDurationOfHours()));
         }
         List<ResourceLoadItem> resourceLoadItemList = new ArrayList<>();
@@ -58,12 +59,13 @@ public class ResourceLoadServiceImpl implements ResourceLoadService {
             List<Integer> workTime = entry.getValue();
             List<Double> rates = new ArrayList<>();
             if ("Group".equals(currentResource.getType())) {
-                rates = workTime.stream().map(o -> o * 1.0 / (currentResource.getCapacity() * GROUP_WORK_TIME)).collect(Collectors.toList());
-                humanWorkTime += workTime.stream().mapToInt(t -> t).sum();
+                // 资源负载率=实际工作时间/可工作时间
+                rates = workTime.stream().map(o -> o * 1.0 / GROUP_WORK_TIME).collect(Collectors.toList());
+                humanWorkTime += workTime.stream().mapToInt(t -> t * currentResource.getCapacity()).sum();
                 humanTime += currentResource.getCapacity() * GROUP_WORK_TIME * DAY_RANGE_LENGTH;
             } else {
-                rates = workTime.stream().map(o -> o * 1.0 / (currentResource.getCapacity() * MACHINE_WORK_TIME)).collect(Collectors.toList());
-                machineWorkTime += workTime.stream().mapToInt(t -> t).sum();
+                rates = workTime.stream().map(o -> o * 1.0 / MACHINE_WORK_TIME).collect(Collectors.toList());
+                machineWorkTime += workTime.stream().mapToInt(t -> t * currentResource.getCapacity()).sum();
                 machineTime += currentResource.getCapacity() * MACHINE_WORK_TIME * DAY_RANGE_LENGTH;
             }
             resourceLoadItemList.add(new ResourceLoadItem(DateUtil.date2LocalDate(startDate), currentResource.getName(), rates));

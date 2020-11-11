@@ -21,4 +21,5 @@ public class Product {
     private List<MachineResource> availableMachineResource;
     private int standardCapacity;
     private int minimumStaff;
+    private int step;
 }

@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * @author Rollingegg
@@ -33,5 +34,23 @@ public class Order {
 
     public boolean equals(Order other){
         return orderId==other.orderId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Order order = (Order) o;
+        return orderId == order.orderId &&
+                orderNum == order.orderNum &&
+                product.equals(order.product) &&
+                termOfDeliver.equals(order.termOfDeliver) &&
+                Objects.equals(startTime, order.startTime) &&
+                Objects.equals(finishTime, order.finishTime);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(orderId, product, orderNum, termOfDeliver, startTime, finishTime);
     }
 }

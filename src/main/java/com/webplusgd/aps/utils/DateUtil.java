@@ -19,6 +19,12 @@ public class DateUtil {
         return date1.isAfter(date2LocalDateTime(date2));
     }
 
+    /**
+     * 前者到后者的日期距离（晚于时负数）
+     * @param dateTime1 前者
+     * @param dateTime2 后者
+     * @return
+     */
     public static long daysDiff(LocalDateTime dateTime1, LocalDateTime dateTime2) {
         return Duration.between(dateTime1, dateTime2).toDays();
     }

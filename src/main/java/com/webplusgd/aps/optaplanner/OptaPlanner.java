@@ -79,6 +79,7 @@ public class OptaPlanner implements Planner {
     @Override
     public void startSchedule(LocalDateTime currentTime) {
         currentScheduleTime = currentTime;
+        log.info("当前系统时间（排程启动时间）设置为：{}",currentTime);
         // 加载问题集
         problem = dataManager.generateProblem(currentScheduleTime);
         scheduleInternal(problem);

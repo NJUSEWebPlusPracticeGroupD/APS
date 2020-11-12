@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -90,11 +91,16 @@ public class ResourceGattChartServiceImpl implements ResourceGanttChartService {
                 result.add(resourceGanttItem);
             }
 
+            convert(result);
             return ResponseVO.buildSuccess(result);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseVO.buildFailure("获取资源甘特图失败！");
         }
+    }
+
+    private void convert(ArrayList<ResourceGanttItem> resourceGanttItems) {
+        Collections.sort(resourceGanttItems);
     }
 
 }

@@ -11,7 +11,7 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ResourceGanttItem {
+public class ResourceGanttItem implements Comparable<ResourceGanttItem> {
     @Schema(description = "资源名", example = "line1")
     private String name;
 
@@ -25,7 +25,22 @@ public class ResourceGanttItem {
 
     @Schema(example = "418477", description = "订单id")
     private String task;
+
     @Schema(example = "true", description = "订单是否延期")
     private boolean delay;
+
+    @Override
+    public int compareTo(ResourceGanttItem resourceGanttItem) {
+        if (this.getName().startsWith("line") && resourceGanttItem.getName().startsWith("line")) {
+            // 为方便排序将 line 序列转为 int 类型
+            return Integer.parseInt(this.getName().substring(4)) - Integer.parseInt(resourceGanttItem.getName().substring(4));
+        } else if (this.getName().startsWith("line")) {
+            return -1;
+        } else if (resourceGanttItem.getName().startsWith("line")) {
+            return 1;
+        } else {
+            return -1;
+        }
+    }
 
 }

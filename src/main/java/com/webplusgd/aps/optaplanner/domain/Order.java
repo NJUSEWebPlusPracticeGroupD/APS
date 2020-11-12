@@ -20,7 +20,7 @@ public class Order {
     private long orderNum;
     private LocalDateTime termOfDeliver;
     /**
-     * 订单开始排程的时间
+     * 订单开始排程的时间(暂时没有设置，需要业务类来计算)
      */
     private LocalDateTime startTime;
     /**

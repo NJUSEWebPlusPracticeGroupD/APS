@@ -30,7 +30,7 @@ public class OrderService
         URL url = null;
         WebServiceException e = null;
         try {
-            url = new URL("file:/D:/oceania-iter2/webclientTest/xml/wsdl/OrderManage.wsdl");
+            url = new URL("http://localhost:8088/ws/order" + "?wsdl");
         } catch (MalformedURLException ex) {
             e = new WebServiceException(ex);
         }

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="resource-01" author="rollingegg">
+        <createTable tableName="resource" remarks="资源表">
+            <column name="resource_id" type="int" remarks="id" encoding="utf8">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="resource_count" type="int" remarks="资源数量" defaultValue="1">
+                <constraints nullable="false"/>
+            </column>
+            <column name="resource_type" type="varchar(10)" remarks="资源类型(工作中心、资源组、资源)" encoding="utf8" defaultValue="资源">
+                <constraints nullable="false"/>
+            </column>
+            <column name="shift_code" type="tinyint(1)" remarks="班次代码(0全天 1早班 2晚班 3休息)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="start_day" type="int" remarks="开始星期(几)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="end_day" type="int" remarks="结束星期(几)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="resource-02" author="rollingegg">
+        <modifyDataType tableName="resource" columnName="resource_id" newDataType="varchar(255)"/>
+    </changeSet>
+</databaseChangeLog>

@@ -1,43 +1,48 @@
 package com.webplusgd.aps.controller;
 
-import com.webplusgd.aps.model.OrderGanttItem;
-import com.webplusgd.aps.model.ResourceGanttItem;
-import com.webplusgd.aps.model.ResourceLoadChart;
-import com.webplusgd.aps.model.ResponseVO;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import com.webplusgd.aps.api.ChartApi;
+import com.webplusgd.aps.exception.NoPlanException;
+import com.webplusgd.aps.service.ResourceLoadService;
+import com.webplusgd.aps.service.OrderGanttChartService;
+import com.webplusgd.aps.service.ResourceGanttChartService;
+import com.webplusgd.aps.vo.*;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.Date;
 
-
 @RestController
-@RequestMapping("/chart")
-public class ChartController {
+@RequestMapping("/api/chart")
+public class ChartController implements ChartApi {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final ResourceGanttChartService resourceGanttChartService;
 
-    @RequestMapping(value = "/getResourceGanttChart", method = RequestMethod.GET)
-    public ResponseVO getResourceGanttChart(@RequestParam Date date){
+    private final OrderGanttChartService orderGanttChartService;
 
-        return ResponseVO.buildSuccess(new ArrayList<ResourceGanttItem>());
+    private final ResourceLoadService resourceLoadService;
+
+    public ChartController(ResourceGanttChartService resourceGanttChartService, OrderGanttChartService orderGanttChartService, ResourceLoadService resourceLoadService) {
+        this.resourceGanttChartService = resourceGanttChartService;
+        this.orderGanttChartService = orderGanttChartService;
+        this.resourceLoadService = resourceLoadService;
     }
 
-    @RequestMapping(value = "/getOrderGanttChart", method = RequestMethod.GET)
-    public ResponseVO getOrderGanttChart(@RequestParam Date date){
-
-        return ResponseVO.buildSuccess(new ArrayList<OrderGanttItem>());
+    @Override
+    @GetMapping("/getResourceGanttChart")
+    public ResponseVO<ArrayList<ResourceGanttItem>> getResourceGanttChart(@RequestParam Date date) {
+        return resourceGanttChartService.getResourceGanttChart(date);
     }
 
-    @RequestMapping(value = "/getResourceLoadChart", method = RequestMethod.GET)
-    public ResponseVO getResourceLoadChart(@RequestParam Date startDate){
-
-        return ResponseVO.buildSuccess(new ResourceLoadChart());
+    @Override
+    @GetMapping("/getOrderGanttChart")
+    public ResponseVO<OrderGanttChart> getOrderGanttChart(@RequestParam Date date) {
+        return orderGanttChartService.getOrderGanttChart(date);
     }
 
+    @Override
+    @GetMapping("/getResourceLoadChart")
+    public ResponseVO<ResourceLoadChart> getResourceLoadChart(@RequestParam Date startDate) throws NoPlanException {
+        return ResponseVO.buildSuccess(resourceLoadService.getResourceLoadChart(startDate));
+    }
 
 }

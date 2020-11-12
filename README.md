@@ -7,7 +7,11 @@ APS课程设计的后端部分，为*NJUSE*2017级互联网开发方向实践大
 
 1. IDEA 或者 Eclipse安装lombok插件
 2. 在`application.yml`中修改本地数据库配置，添加对应的`@Profile`即可
-3. 启动项目
+3. 在idea→edit configurations处修改profile
+
+![image-20201108235806240](screenshots/image-20201108235806240.png)
+
+4. 启动项目
 
 ### 接口文档
 

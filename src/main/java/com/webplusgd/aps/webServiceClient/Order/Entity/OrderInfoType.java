@@ -34,7 +34,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "orderInfoType", propOrder = {
+@XmlType(name = "orderInfoType",namespace = "http://www.oldCompany.com/order",propOrder = {
     "orderId",
     "item",
     "numOfOrder",
@@ -44,17 +44,18 @@ import javax.xml.datatype.XMLGregorianCalendar;
 })
 public class OrderInfoType {
 
-    @XmlElement(required = true)
+    @XmlElement(required = true,namespace = "")
     protected String orderId;
-    @XmlElement(required = true)
+    @XmlElement(required = true,namespace = "")
     protected String item;
+    @XmlElement(required = true,namespace = "")
     protected int numOfOrder;
-    @XmlElement(required = true)
+    @XmlElement(required = true,namespace = "")
     @XmlSchemaType(name = "date")
     protected XMLGregorianCalendar termOfDelivery;
-    @XmlElement(required = true, defaultValue = "")
+    @XmlElement(required = true, defaultValue = "",namespace = "")
     protected String comment;
-    @XmlElement(required = true, defaultValue = "")
+    @XmlElement(required = true, defaultValue = "",namespace = "")
     protected String length;
 
     /**

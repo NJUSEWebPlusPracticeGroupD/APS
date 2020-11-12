@@ -13,6 +13,26 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Resource {
+    /**
+     * 群组人数/机器数量，代表生产能力
+     */
+    private int capacity;
     protected String name;
     protected Shift shift;
+    protected String type="undefined";
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Resource && name.equals(((Resource) obj).name);
+    }
+
+    @Override
+    public int hashCode() {
+        return name.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }

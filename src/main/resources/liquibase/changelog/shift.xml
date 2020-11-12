@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="shift-01" author="rollingegg">
+        <createTable tableName="shift" remarks="班次表">
+            <column name="shift_code" type="tinyint(1)" remarks="班次代码(0全天 1早班 2晚班 3休息)" encoding="utf8">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="shift_name" type="varchar(10)" remarks="班次名称" encoding="utf8">
+                <constraints nullable="false"/>
+            </column>
+            <column name="start_time" type="int" remarks="开始时间(h)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="end_time" type="int" remarks="结束时间(h)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

@@ -1,5 +1,7 @@
 package com.webplusgd.aps.optaplanner;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import com.webplusgd.aps.optaplanner.domain.Order;
 import com.webplusgd.aps.optaplanner.domain.Task;
 import com.webplusgd.aps.optaplanner.domain.Timeslot;
@@ -19,9 +21,11 @@ import java.util.List;
  * @create_time 11/5/2020 11:20 AM
  */
 @PlanningSolution
+@Data
+@NoArgsConstructor
 public class ApsSolution {
-    @ValueRangeProvider(id = "orderRange")
-    @ProblemFactCollectionProperty
+//    @ValueRangeProvider(id = "orderRange")
+//    @ProblemFactCollectionProperty
     private List<Order> orderList;
 
     @ValueRangeProvider(id = "groupRange")
@@ -41,4 +45,12 @@ public class ApsSolution {
 
     @PlanningScore
     private HardSoftScore score;
+
+    public ApsSolution(List<Order> orderList, List<GroupResource> groupResourceList, List<MachineResource> machineResourceList, List<Timeslot> timeslotList, List<Task> taskList) {
+        this.orderList = orderList;
+        this.groupResourceList = groupResourceList;
+        this.machineResourceList = machineResourceList;
+        this.timeslotList = timeslotList;
+        this.taskList = taskList;
+    }
 }

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="bom-01" author="rollingegg">
+        <createTable tableName="bom" remarks="BOM表">
+            <column name="id" type="int" remarks="自增id" autoIncrement="true" encoding="utf8">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="material_id" type="int" remarks="物料号码">
+                <constraints nullable="false"/>
+            </column>
+            <column name="resource_id" type="int" remarks="资源代码">
+                <constraints nullable="false"/>
+            </column>
+            <column name="resource_type" type="int" remarks="资源类型 0主资源 1副资源" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="standard_capacity" type="int" remarks="标准产能(单位:个/小时)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="quota" type="int" remarks="产品规定生产人员">
+                <constraints nullable="false"/>
+            </column>
+            <column name="switching_time" type="double" remarks="资源切换时间" defaultValue="0"/>
+            <column name="craft" type="varchar(255)" encoding="utf8" remarks="工艺所需物料代码序列">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="bom-02" author="toby">
+        <modifyDataType tableName="bom" columnName="resource_id" newDataType="varchar(255)"/>
+    </changeSet>
+    
+    <changeSet id="bom-03" author="rollingegg">
+        <setColumnRemarks tableName="bom" columnName="craft" remarks="所属工艺名称（装配、测试等）"/>
+    </changeSet>
+</databaseChangeLog>

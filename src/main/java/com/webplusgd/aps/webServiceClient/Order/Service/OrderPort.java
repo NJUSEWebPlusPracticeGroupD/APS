@@ -6,10 +6,13 @@ import javax.jws.WebParam;
 import javax.jws.WebResult;
 import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;
-import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.ws.Action;
 import javax.xml.ws.FaultAction;
-import com.webplusgd.aps.webServiceClient.Order.Entity.*;
+
+import com.webplusgd.aps.webServiceClient.Order.Entity.GetOrderByIdType;
+import com.webplusgd.aps.webServiceClient.Order.Entity.GetOrdersByItemIdType;
+import com.webplusgd.aps.webServiceClient.Order.Entity.OrderInfoType;
+import com.webplusgd.aps.webServiceClient.Order.Entity.OrderList;
 
 
 /**

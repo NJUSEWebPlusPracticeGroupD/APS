@@ -1,7 +1,6 @@
 spring:
   profiles:
-    active: toby
-  #    active: "@profileActive@"
+      active: "@profileActive@"
   liquibase:
     change-log: classpath:liquibase/master.xml
     enabled: true
@@ -83,12 +82,28 @@ springdoc:
     operationsSorter: method
   show-actuator: true
   group-configs:
-  - group: users
+  - group: Aps
     packages-to-scan: com.webplusgd.aps
+
+logging:
+  level:
+    org:
+      optaplanner: debug
+#optaplanner:
+#  solver:
+#    termination:
+#      spent-limit: 5s
+#  solver-config-xml: optaplanner/solver/ApsConfig.xml
 
 ---
 spring:
   profiles: prod
+  datasource:
+    type: com.mysql.cj.jdbc.MysqlDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/apsdb?characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&rewriteBatchedStatements=true&allowMultiQueries=true
+    username: root
+    password: njuse2017
   devtools:
     add-properties: false
 server:
@@ -140,11 +155,19 @@ server:
   http2:
     enabled: true
 
-logging:
-  level:
-    org:
-      optaplanner: info
-optaplanner:
-  solver:
-    termination:
-      spent-limit: 5s
+---
+spring:
+  profiles: zyf
+  devtools:
+    add-properties: true
+  datasource:
+    type: com.mysql.cj.jdbc.MysqlDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/apsdb?characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&rewriteBatchedStatements=true&allowMultiQueries=true
+    username: root
+    password: 981209880522Ff
+server:
+  port: 8000
+  http2:
+    enabled: true
+

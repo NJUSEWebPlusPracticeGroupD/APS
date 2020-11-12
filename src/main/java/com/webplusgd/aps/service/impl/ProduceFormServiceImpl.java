@@ -1,5 +1,6 @@
 package com.webplusgd.aps.service.impl;
 
+import com.webplusgd.aps.optaplanner.FCFSPlanner;
 import com.webplusgd.aps.optaplanner.ScheduledTask;
 import com.webplusgd.aps.service.ProduceFormService;
 import com.webplusgd.aps.vo.OrderPlanItem;
@@ -16,6 +17,8 @@ public class ProduceFormServiceImpl implements ProduceFormService {
 
     @Autowired
     OrderPlanFormServiceImpl orderPlanFormService;
+    @Autowired
+    FCFSPlanner fcfsPlanner;
 
     public ArrayList<ResourceProduceItem> ProduceItems;
     public List<ScheduledTask> plan;
@@ -24,6 +27,7 @@ public class ProduceFormServiceImpl implements ProduceFormService {
     public ResponseVO<ArrayList<ResourceProduceItem>> getProduceForm(Date date) {
 
         //todo: 获取plan
+        plan = fcfsPlanner.waitForPlan();
 
         if(plan==null||plan.size()==0){
             return ResponseVO.buildFailure("还未进行排程");
@@ -55,7 +59,7 @@ public class ProduceFormServiceImpl implements ProduceFormService {
         for(int i=0;i<25;i++){
             timeSegment[i] = startTime.plusHours(i);
         }
-        if(!timeSegment[23].isEqual(endTime)){
+        if(!timeSegment[24].isEqual(endTime)){
             System.out.println("timeSegment fault.");
             return null;
         }

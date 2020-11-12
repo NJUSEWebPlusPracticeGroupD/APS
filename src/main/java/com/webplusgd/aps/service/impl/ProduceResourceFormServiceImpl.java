@@ -1,5 +1,6 @@
 package com.webplusgd.aps.service.impl;
 
+import com.webplusgd.aps.optaplanner.FCFSPlanner;
 import com.webplusgd.aps.optaplanner.OptaPlanner;
 import com.webplusgd.aps.optaplanner.ScheduledTask;
 import com.webplusgd.aps.service.ProduceResourceFormService;
@@ -19,13 +20,18 @@ public class ProduceResourceFormServiceImpl implements ProduceResourceFormServic
 
     @Autowired
     OrderPlanFormServiceImpl orderPlanFormService;
+
+    @Autowired
+    FCFSPlanner fcfsPlanner;
+
     public List<ScheduledTask> plan;
 
 
     @Override
     public ResponseVO<OrderResourceForm> getProduceResourceForm() {
-        OptaPlanner optaPlanner = new OptaPlanner();
+
         //todo: 获取plan
+        plan = fcfsPlanner.waitForPlan();
 
         if(plan==null||plan.size()==0){
             return ResponseVO.buildFailure("还未进行排程");

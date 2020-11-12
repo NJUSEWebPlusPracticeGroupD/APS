@@ -1,5 +1,6 @@
 package com.webplusgd.aps.service.impl;
 
+import com.webplusgd.aps.optaplanner.FCFSPlanner;
 import com.webplusgd.aps.optaplanner.OptaPlanner;
 import com.webplusgd.aps.optaplanner.ScheduledTask;
 import com.webplusgd.aps.optaplanner.domain.Timeslot;
@@ -7,6 +8,7 @@ import com.webplusgd.aps.service.OrderPlanFormService;
 import com.webplusgd.aps.vo.OrderPlanItem;
 import com.webplusgd.aps.vo.ResourceProduceItem;
 import com.webplusgd.aps.vo.ResponseVO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.sql.Time;
@@ -17,14 +19,19 @@ import java.util.*;
 @Component
 public class OrderPlanFormServiceImpl implements OrderPlanFormService {
 
+    @Autowired
+    FCFSPlanner fcfsPlanner ;
+
     public ArrayList<OrderPlanItem> orderPlanItems;
     public List<ScheduledTask> plan;
 
     @Override
     public ResponseVO<ArrayList<OrderPlanItem>> getOrderPlanForm() {
 
-        OptaPlanner optaPlanner = new OptaPlanner();
+
         //todo: 获取plan
+
+        plan = fcfsPlanner.waitForPlan();
 
         if(plan==null||plan.size()==0){
             return ResponseVO.buildFailure("还未进行排程");
@@ -138,7 +145,7 @@ public class OrderPlanFormServiceImpl implements OrderPlanFormService {
                 orderPlanItem.setTurnToOrderProductionTable(false);
                 orderPlanItem.setSplit(true);
                 orderPlanItem.setStartTime(mergedTimeSlots.get(0).getStartDateTime());
-                orderPlanItem.setStartTime(mergedTimeSlots.get(mergedTimeSlots.size()-1).getEndDateTime());
+                orderPlanItem.setEndTime(mergedTimeSlots.get(mergedTimeSlots.size()-1).getEndDateTime());
                 List<OrderPlanItem> children = new ArrayList<>();
                 orderPlanItem.setChildren(children);
                 int childIndex = 1;

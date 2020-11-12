@@ -98,6 +98,12 @@ logging:
 ---
 spring:
   profiles: prod
+  datasource:
+    type: com.mysql.cj.jdbc.MysqlDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/apsdb?characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&rewriteBatchedStatements=true&allowMultiQueries=true
+    username: root
+    password: njuse2017
   devtools:
     add-properties: false
 server:

@@ -128,7 +128,14 @@ public class ProduceResourceFormServiceImpl implements ProduceResourceFormServic
 
         }
         res.setResourceItems(resourceItems);
-        res.setAllResourcesLabels(new ArrayList<String>(allResources));
+        ArrayList<String> allResourcesArray = new ArrayList<>(allResources);
+        allResourcesArray.sort(new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                return o1.compareTo(o2);
+            }
+        });
+        res.setAllResourcesLabels(allResourcesArray);
 
         return ResponseVO.buildSuccess(res);
     }

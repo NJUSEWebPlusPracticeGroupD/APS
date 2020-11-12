@@ -15,8 +15,10 @@ import java.util.List;
 public class OrderPlanItem {
     @Schema(example = "418477",description = "订单号")
     private String orderNumber;
+
     @Schema(example = "true",description = "订单是否拆分")
     private boolean isSplit;
+
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     @Schema(example = "2018-07-13", description = "订单生产起始日期")
     private LocalDateTime startTime;
@@ -27,4 +29,9 @@ public class OrderPlanItem {
     private boolean turnToOrderProductionTable;
     @Schema(description = "若订单拆分，children为子订单列表")
     private List<OrderPlanItem> children;
+
+    //----序列化字段名称覆写-----
+    public boolean getIsSplit() {
+        return isSplit;
+    }
 }

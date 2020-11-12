@@ -56,6 +56,7 @@ public class OptaPlanner implements Planner {
     @Scheduled(fixedRate = 3000)
     private void fixedRateJob() {
         if (solverJob != null) {
+            log.info("开启排程任务");
             tryGetPlan();
         }
     }

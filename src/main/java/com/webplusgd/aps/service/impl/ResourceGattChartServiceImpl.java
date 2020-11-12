@@ -29,7 +29,7 @@ public class ResourceGattChartServiceImpl implements ResourceGanttChartService {
             List<ScheduledTask> scheduledTasks = fcfsPlanner.tryGetPlan();
 
             if (scheduledTasks == null) {
-                return ResponseVO.buildFailure("获取资源甘特图失败！");
+                return ResponseVO.buildFailure("还未进行排程！");
             }
 
             ArrayList<ResourceGanttItem> resourceGanttItems = new ArrayList<>();

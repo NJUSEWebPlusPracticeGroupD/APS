@@ -6,14 +6,13 @@ import com.webplusgd.aps.service.OrderGanttChartService;
 import com.webplusgd.aps.utils.DateUtil;
 import com.webplusgd.aps.vo.OrderGanttItem;
 import com.webplusgd.aps.vo.OrderGanttChart;
+import com.webplusgd.aps.vo.ResourceGanttItem;
 import com.webplusgd.aps.vo.ResponseVO;
 import lombok.Data;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service("OrderGanttChartService")
 public class OrderGattChartServiceImpl implements OrderGanttChartService {
@@ -24,100 +23,63 @@ public class OrderGattChartServiceImpl implements OrderGanttChartService {
         this.fcfsPlanner = fcfsPlanner;
     }
 
-    @Data
-    static class TraitsOfHour {
-        Date date;
-        int resourceNum = 0;
-        int standardCapacity;
-
-        boolean equals(LocalDateTime dateTime) {
-            return date.equals(DateUtil.localDateTime2Date(dateTime));
-        }
-    }
-
-    private void getTraitsOfHours(List<TraitsOfHour> traitsOfHours, ScheduledTask scheduledTask) {
-        int index = -1;
-        for (int i = 0; i < traitsOfHours.size(); i++) {
-            if (traitsOfHours.get(i).equals(scheduledTask.getTimeslot().getStartDateTime())) {
-                index = i;
-                break;
-            }
-        }
-        if (index == -1) {
-            TraitsOfHour traitsOfHour = new TraitsOfHour();
-            traitsOfHour.setDate(DateUtil.localDateTime2Date(scheduledTask.getOrder().getFinishTime().minusDays(1)));
-            traitsOfHour.setResourceNum(1);
-            traitsOfHour.setStandardCapacity(scheduledTask.getOrder().getProduct().getStandardCapacity());
-            traitsOfHours.add(traitsOfHour);
-        } else {
-            traitsOfHours.get(index).setResourceNum(traitsOfHours.get(index).getResourceNum() + 1);
-        }
-    }
-
     @Override
     public ResponseVO<OrderGanttChart> getOrderGanttChart(Date date) {
         try {
             List<ScheduledTask> scheduledTasks = fcfsPlanner.tryGetPlan();
 
-            if (scheduledTasks == null) {
-                return ResponseVO.buildFailure("获取订单甘特图失败！");
+            if (scheduledTasks == null || scheduledTasks.size() == 0) {
+                return ResponseVO.buildFailure("还未进行排程！");
             }
 
-            List<Integer> orderIds = new ArrayList<>();
             ArrayList<OrderGanttItem> orderGanttItems = new ArrayList<>();
-            int orderCount = 0, onTimeCount = 0;
-            LocalDateTime earliestDate = scheduledTasks.get(0).getOrder().getFinishTime();
+            scheduledTasks.removeIf(scheduledTask -> !scheduledTask.getResource().getName().startsWith("line"));
+            LocalDateTime nextDate = DateUtil.date2LocalDateTime(date).plusDays(1);
 
-            // 扫描排程计划表，记录所有订单 id
+            List<Integer> orderIds = new ArrayList<>();
             for (ScheduledTask scheduledTask : scheduledTasks) {
                 if (!orderIds.contains(scheduledTask.getOrder().getOrderId())) {
                     orderIds.add(scheduledTask.getOrder().getOrderId());
                 }
-                if (scheduledTask.getTimeslot().getStartDateTime().isBefore(earliestDate)) {
-                    earliestDate = scheduledTask.getTimeslot().getStartDateTime();
-                }
-                orderCount++;
             }
 
-            LocalDateTime dueDate = DateUtil.date2LocalDateTime(date).plusDays(1);
             for (Integer orderId : orderIds) {
-                long achieved = 0, goal = 0, todo = 0;
-
-                List<TraitsOfHour> achievedTraitsOfHours = new ArrayList<>();
-                List<TraitsOfHour> todoTraitsOfHours = new ArrayList<>();
+                OrderGanttItem orderGanttItem = new OrderGanttItem();
+                orderGanttItem.setOrderId(Integer.toString(orderId));
+                long archived = 0, delayed = 0, goal = 0;
                 for (ScheduledTask scheduledTask : scheduledTasks) {
                     if (orderId == scheduledTask.getOrder().getOrderId()) {
-                        if (scheduledTask.getOrder().getFinishTime().isBefore(dueDate)) {
-                            getTraitsOfHours(achievedTraitsOfHours, scheduledTask);
-                            onTimeCount++;
-                        } else if (dueDate.isBefore(scheduledTask.getTimeslot().getStartDateTime()) && scheduledTask.getOrder().getFinishTime().isBefore(scheduledTask.getOrder().getTermOfDeliver())) {
-                            getTraitsOfHours(todoTraitsOfHours, scheduledTask);
+                        if (scheduledTask.getOrder().getFinishTime().isAfter(scheduledTask.getOrder().getTermOfDeliver())) {
+                            delayed += scheduledTask.getOrder().getProduct().getStandardCapacity() * scheduledTask.getTimeslot().getDurationOfHours();
+                        } else if (scheduledTask.getTimeslot().getEndDateTime().isBefore(nextDate)) {
+                            archived += scheduledTask.getOrder().getProduct().getStandardCapacity() * scheduledTask.getTimeslot().getDurationOfHours();
                         }
-
                         goal += scheduledTask.getOrder().getProduct().getStandardCapacity();
                     }
                 }
-
-                for (TraitsOfHour achievedTraitsOfHour : achievedTraitsOfHours) {
-                    achieved += achievedTraitsOfHour.getResourceNum() * achievedTraitsOfHour.getStandardCapacity();
-                }
-                for (TraitsOfHour todoTraitsOfHour : todoTraitsOfHours) {
-                    todo += todoTraitsOfHour.getResourceNum() * todoTraitsOfHour.getStandardCapacity();
-                }
-
-                int progress = (int) (achieved * 100 / goal);
-                int progressDelay = 100 - progress - (int) (todo * 100 / goal);
-                OrderGanttItem orderGanttItem = new OrderGanttItem(Integer.toString(orderId), progress, progressDelay);
+                
+                int progress = (int) (archived * 100 / goal);
+                int progressDelay = (int) (delayed * 100 / goal);
+                orderGanttItem.setProgress(progress);
+                orderGanttItem.setProgressDelay(progressDelay);
                 orderGanttItems.add(orderGanttItem);
             }
 
-            double onTimeDelivery;
-            if (DateUtil.date2LocalDateTime(date).isBefore(earliestDate)) {
-                onTimeDelivery = 100;
-            } else {
-                onTimeDelivery = onTimeCount * 100.0 / orderCount;
+            long delayedOrderNum = 0;
+            for (Integer orderId : orderIds) {
+                for (ScheduledTask scheduledTask : scheduledTasks) {
+                    if (orderId == scheduledTask.getOrder().getOrderId()) {
+                        if (!scheduledTask.getOrder().getFinishTime().isAfter(scheduledTask.getOrder().getTermOfDeliver())) {
+                            delayedOrderNum++;
+                        }
+                        break;
+                    }
+                }
             }
+
+            double onTimeDelivery = delayedOrderNum * 100.0 / orderIds.size();
             OrderGanttChart orderGanttChart = new OrderGanttChart(onTimeDelivery, orderGanttItems);
+
             return ResponseVO.buildSuccess(orderGanttChart);
         } catch (Exception e) {
             e.printStackTrace();

@@ -66,11 +66,15 @@ public class OrderGattChartServiceImpl implements OrderGanttChartService {
             List<Integer> orderIds = new ArrayList<>();
             ArrayList<OrderGanttItem> orderGanttItems = new ArrayList<>();
             int orderCount = 0, onTimeCount = 0;
+            LocalDateTime earliestDate = scheduledTasks.get(0).getOrder().getFinishTime();
 
             // 扫描排程计划表，记录所有订单 id
             for (ScheduledTask scheduledTask : scheduledTasks) {
                 if (!orderIds.contains(scheduledTask.getOrder().getOrderId())) {
                     orderIds.add(scheduledTask.getOrder().getOrderId());
+                }
+                if (scheduledTask.getTimeslot().getStartDateTime().isBefore(earliestDate)) {
+                    earliestDate = scheduledTask.getTimeslot().getStartDateTime();
                 }
                 orderCount++;
             }
@@ -107,7 +111,12 @@ public class OrderGattChartServiceImpl implements OrderGanttChartService {
                 orderGanttItems.add(orderGanttItem);
             }
 
-            double onTimeDelivery = onTimeCount * 1.0 / orderCount;
+            double onTimeDelivery;
+            if (DateUtil.date2LocalDateTime(date).isBefore(earliestDate)) {
+                onTimeDelivery = 100;
+            } else {
+                onTimeDelivery = onTimeCount * 100.0 / orderCount;
+            }
             OrderGanttChart orderGanttChart = new OrderGanttChart(onTimeDelivery, orderGanttItems);
             return ResponseVO.buildSuccess(orderGanttChart);
         } catch (Exception e) {

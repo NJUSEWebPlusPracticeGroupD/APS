@@ -46,7 +46,7 @@ public class OrderGattChartServiceImpl implements OrderGanttChartService {
         if (index == -1) {
             TraitsOfHour traitsOfHour = new TraitsOfHour();
             traitsOfHour.setDate(DateUtil.localDateTime2Date(scheduledTask.getOrder().getFinishTime().minusDays(1)));
-            traitsOfHour.setResourceNum(scheduledTask.getResource().getCapacity());
+            traitsOfHour.setResourceNum(1);
             traitsOfHour.setStandardCapacity(scheduledTask.getOrder().getProduct().getStandardCapacity());
             traitsOfHours.add(traitsOfHour);
         } else {
@@ -102,7 +102,7 @@ public class OrderGattChartServiceImpl implements OrderGanttChartService {
                 }
 
                 int progress = (int) (achieved * 100 / goal);
-                int progressDelay = (int) (todo * 100 / goal);
+                int progressDelay = 100 - progress - (int) (todo * 100 / goal);
                 OrderGanttItem orderGanttItem = new OrderGanttItem(Integer.toString(orderId), progress, progressDelay);
                 orderGanttItems.add(orderGanttItem);
             }

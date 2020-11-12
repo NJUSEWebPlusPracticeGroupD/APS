@@ -1,6 +1,6 @@
 package com.webplusgd.aps.service.impl;
 
-import com.webplusgd.aps.optaplanner.OptaPlanner;
+import com.webplusgd.aps.optaplanner.FCFSPlanner;
 import com.webplusgd.aps.optaplanner.ScheduledTask;
 import com.webplusgd.aps.service.ResourceGanttChartService;
 import com.webplusgd.aps.utils.DateUtil;
@@ -16,16 +16,21 @@ import java.util.List;
 @Service("ResourceGanttChartService")
 public class ResourceGattChartServiceImpl implements ResourceGanttChartService {
 
-    private final OptaPlanner optaPlanner;
+    private final FCFSPlanner fcfsPlanner;
 
-    public ResourceGattChartServiceImpl(OptaPlanner optaPlanner) {
-        this.optaPlanner = optaPlanner;
+    public ResourceGattChartServiceImpl(FCFSPlanner fcfsPlanner) {
+        this.fcfsPlanner = fcfsPlanner;
     }
 
     @Override
     public ResponseVO<ArrayList<ResourceGanttItem>> getResourceGanttChart(Date date) {
         try {
-            List<ScheduledTask> scheduledTasks = null;
+            List<ScheduledTask> scheduledTasks = fcfsPlanner.tryGetPlan();
+
+            if (scheduledTasks == null) {
+                return ResponseVO.buildFailure("获取资源甘特图失败！");
+            }
+
             ArrayList<ResourceGanttItem> resourceGanttItems = new ArrayList<>();
 
             // 指定日期的早晨7点
@@ -36,7 +41,7 @@ public class ResourceGattChartServiceImpl implements ResourceGanttChartService {
             // 第一步：默认所有在 date 早晨7点到第二天早晨7点之间的排程未延期，添加进结果列表
             for (ScheduledTask scheduledTask : scheduledTasks) {
                 if (startDateTime.isBefore(scheduledTask.getTimeslot().getStartDateTime()) && scheduledTask.getTimeslot().getEndDateTime().isBefore(endDateTime)) {
-                    ResourceGanttItem resourceGanttItem = new ResourceGanttItem(scheduledTask.getResource().getName(), DateUtil.localDateTime2Date(scheduledTask.getOrder().getStartTime()), DateUtil.localDateTime2Date(scheduledTask.getOrder().getFinishTime()), Integer.toString(scheduledTask.getOrder().getOrderId()), false);
+                    ResourceGanttItem resourceGanttItem = new ResourceGanttItem(scheduledTask.getResource().getName(), DateUtil.localDateTime2Date(scheduledTask.getTimeslot().getStartDateTime()), DateUtil.localDateTime2Date(scheduledTask.getTimeslot().getEndDateTime()), Integer.toString(scheduledTask.getOrder().getOrderId()), false);
                     resourceGanttItems.add(resourceGanttItem);
                 }
             }

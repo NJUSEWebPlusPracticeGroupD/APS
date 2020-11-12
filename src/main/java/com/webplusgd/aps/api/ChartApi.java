@@ -58,4 +58,5 @@ public interface ChartApi {
             @DateTimeFormat(pattern = "yyyy-MM-dd", iso = DateTimeFormat.ISO.DATE)
             @Parameter(description = "当前查看日期", example = "2018-09-10")
             @RequestParam Date startDate) throws NoPlanException;
+
 }

@@ -1,6 +1,6 @@
 package com.webplusgd.aps.service.impl;
 
-import com.webplusgd.aps.optaplanner.OptaPlanner;
+import com.webplusgd.aps.optaplanner.FCFSPlanner;
 import com.webplusgd.aps.optaplanner.ScheduledTask;
 import com.webplusgd.aps.service.OrderGanttChartService;
 import com.webplusgd.aps.utils.DateUtil;
@@ -18,10 +18,10 @@ import java.util.List;
 @Service("OrderGanttChartService")
 public class OrderGattChartServiceImpl implements OrderGanttChartService {
 
-    private final OptaPlanner optaPlanner;
+    private final FCFSPlanner fcfsPlanner;
 
-    public OrderGattChartServiceImpl(OptaPlanner optaPlanner) {
-        this.optaPlanner = optaPlanner;
+    public OrderGattChartServiceImpl(FCFSPlanner fcfsPlanner) {
+        this.fcfsPlanner = fcfsPlanner;
     }
 
     @Data
@@ -46,7 +46,7 @@ public class OrderGattChartServiceImpl implements OrderGanttChartService {
         }
         if (index == -1) {
             TraitsOfHour traitsOfHour = new TraitsOfHour();
-            traitsOfHour.setDate(DateUtil.localDateTime2Date(scheduledTask.getOrder().getStartTime()));
+            traitsOfHour.setDate(DateUtil.localDateTime2Date(scheduledTask.getOrder().getFinishTime().minusDays(1)));
             traitsOfHour.setResourceNum(scheduledTask.getResource().getCapacity());
             traitsOfHour.setStandardCapacity(scheduledTask.getOrder().getProduct().getStandardCapacity());
             traitsOfHour.setMinimumStaff(scheduledTask.getOrder().getProduct().getMinimumStaff());
@@ -59,7 +59,12 @@ public class OrderGattChartServiceImpl implements OrderGanttChartService {
     @Override
     public ResponseVO<OrderGanttChart> getOrderGanttChart(Date date) {
         try {
-            List<ScheduledTask> scheduledTasks = null;
+            List<ScheduledTask> scheduledTasks = fcfsPlanner.tryGetPlan();
+
+            if (scheduledTasks == null) {
+                return ResponseVO.buildFailure("获取订单甘特图失败！");
+            }
+
             List<Integer> orderIds = new ArrayList<>();
             ArrayList<OrderGanttItem> orderGanttItems = new ArrayList<>();
             int orderCount = 0, onTimeCount = 0;
@@ -80,10 +85,11 @@ public class OrderGattChartServiceImpl implements OrderGanttChartService {
                 List<TraitsOfHour> todoTraitsOfHours = new ArrayList<>();
                 for (ScheduledTask scheduledTask : scheduledTasks) {
                     if (orderId == scheduledTask.getOrder().getOrderId()) {
+//                        LocalDateTime dueDate = scheduledTask.getOrder().getFinishTime();
                         if (scheduledTask.getOrder().getFinishTime().isBefore(dueDate)) {
                             getTraitsOfHours(achievedTraitsOfHours, scheduledTask);
                             onTimeCount++;
-                        } else if (dueDate.isBefore(scheduledTask.getOrder().getStartTime()) && scheduledTask.getOrder().getFinishTime().isBefore(scheduledTask.getOrder().getTermOfDeliver())) {
+                        } else if (dueDate.isBefore(scheduledTask.getTimeslot().getStartDateTime()) && scheduledTask.getOrder().getFinishTime().isBefore(scheduledTask.getOrder().getTermOfDeliver())) {
                             getTraitsOfHours(todoTraitsOfHours, scheduledTask);
                         }
 
@@ -97,8 +103,8 @@ public class OrderGattChartServiceImpl implements OrderGanttChartService {
                     todo += todoTraitsOfHour.getResourceNum() * todoTraitsOfHour.getStandardCapacity() / todoTraitsOfHour.getMinimumStaff();
                 }
 
-                int progress = (int) (achieved / goal);
-                int progressDelay = (int) (todo / goal);
+                int progress = (int) (achieved * 100 / goal);
+                int progressDelay = (int) (todo * 100 / goal);
                 OrderGanttItem orderGanttItem = new OrderGanttItem(Integer.toString(orderId), progress, progressDelay);
                 orderGanttItems.add(orderGanttItem);
             }

@@ -29,7 +29,6 @@ public class OrderGattChartServiceImpl implements OrderGanttChartService {
         Date date;
         int resourceNum = 0;
         int standardCapacity;
-        int minimumStaff;
 
         boolean equals(LocalDateTime dateTime) {
             return date.equals(DateUtil.localDateTime2Date(dateTime));
@@ -39,7 +38,7 @@ public class OrderGattChartServiceImpl implements OrderGanttChartService {
     private void getTraitsOfHours(List<TraitsOfHour> traitsOfHours, ScheduledTask scheduledTask) {
         int index = -1;
         for (int i = 0; i < traitsOfHours.size(); i++) {
-            if (traitsOfHours.get(i).equals(scheduledTask.getOrder().getStartTime())) {
+            if (traitsOfHours.get(i).equals(scheduledTask.getTimeslot().getStartDateTime())) {
                 index = i;
                 break;
             }
@@ -49,10 +48,9 @@ public class OrderGattChartServiceImpl implements OrderGanttChartService {
             traitsOfHour.setDate(DateUtil.localDateTime2Date(scheduledTask.getOrder().getFinishTime().minusDays(1)));
             traitsOfHour.setResourceNum(scheduledTask.getResource().getCapacity());
             traitsOfHour.setStandardCapacity(scheduledTask.getOrder().getProduct().getStandardCapacity());
-            traitsOfHour.setMinimumStaff(scheduledTask.getOrder().getProduct().getMinimumStaff());
             traitsOfHours.add(traitsOfHour);
         } else {
-            traitsOfHours.get(index).setResourceNum(traitsOfHours.get(index).getResourceNum() + scheduledTask.getResource().getCapacity());
+            traitsOfHours.get(index).setResourceNum(traitsOfHours.get(index).getResourceNum() + 1);
         }
     }
 
@@ -79,13 +77,12 @@ public class OrderGattChartServiceImpl implements OrderGanttChartService {
 
             LocalDateTime dueDate = DateUtil.date2LocalDateTime(date).plusDays(1);
             for (Integer orderId : orderIds) {
-                long achieved = 0, goal = 1, todo = 0;
+                long achieved = 0, goal = 0, todo = 0;
 
                 List<TraitsOfHour> achievedTraitsOfHours = new ArrayList<>();
                 List<TraitsOfHour> todoTraitsOfHours = new ArrayList<>();
                 for (ScheduledTask scheduledTask : scheduledTasks) {
                     if (orderId == scheduledTask.getOrder().getOrderId()) {
-//                        LocalDateTime dueDate = scheduledTask.getOrder().getFinishTime();
                         if (scheduledTask.getOrder().getFinishTime().isBefore(dueDate)) {
                             getTraitsOfHours(achievedTraitsOfHours, scheduledTask);
                             onTimeCount++;
@@ -93,14 +90,15 @@ public class OrderGattChartServiceImpl implements OrderGanttChartService {
                             getTraitsOfHours(todoTraitsOfHours, scheduledTask);
                         }
 
-                        goal = scheduledTask.getOrder().getOrderNum();
+                        goal += scheduledTask.getOrder().getProduct().getStandardCapacity();
                     }
                 }
+
                 for (TraitsOfHour achievedTraitsOfHour : achievedTraitsOfHours) {
-                    achieved += achievedTraitsOfHour.getResourceNum() * achievedTraitsOfHour.getStandardCapacity() / achievedTraitsOfHour.getMinimumStaff();
+                    achieved += achievedTraitsOfHour.getResourceNum() * achievedTraitsOfHour.getStandardCapacity();
                 }
                 for (TraitsOfHour todoTraitsOfHour : todoTraitsOfHours) {
-                    todo += todoTraitsOfHour.getResourceNum() * todoTraitsOfHour.getStandardCapacity() / todoTraitsOfHour.getMinimumStaff();
+                    todo += todoTraitsOfHour.getResourceNum() * todoTraitsOfHour.getStandardCapacity();
                 }
 
                 int progress = (int) (achieved * 100 / goal);

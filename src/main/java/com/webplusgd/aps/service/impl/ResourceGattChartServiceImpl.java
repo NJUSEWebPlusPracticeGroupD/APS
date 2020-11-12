@@ -32,6 +32,7 @@ public class ResourceGattChartServiceImpl implements ResourceGanttChartService {
             }
 
             ArrayList<ResourceGanttItem> resourceGanttItems = new ArrayList<>();
+            ArrayList<String> resourceNames = new ArrayList<>();
 
             // 指定日期的早晨7点
             LocalDateTime startDateTime = DateUtil.date2LocalDateTime(date).plusHours(7);
@@ -43,6 +44,9 @@ public class ResourceGattChartServiceImpl implements ResourceGanttChartService {
                 if (startDateTime.isBefore(scheduledTask.getTimeslot().getStartDateTime()) && scheduledTask.getTimeslot().getEndDateTime().isBefore(endDateTime)) {
                     ResourceGanttItem resourceGanttItem = new ResourceGanttItem(scheduledTask.getResource().getName(), DateUtil.localDateTime2Date(scheduledTask.getTimeslot().getStartDateTime()), DateUtil.localDateTime2Date(scheduledTask.getTimeslot().getEndDateTime()), Integer.toString(scheduledTask.getOrder().getOrderId()), false);
                     resourceGanttItems.add(resourceGanttItem);
+                    if (!resourceNames.contains(scheduledTask.getResource().getName())) {
+                        resourceNames.add(scheduledTask.getResource().getName());
+                    }
                 }
             }
             // 第二步：对于当前结果列表中的所有排程，判断其是否延期
@@ -60,7 +64,33 @@ public class ResourceGattChartServiceImpl implements ResourceGanttChartService {
                 resourceGanttItem.setDelay(termOfDeliver.isBefore(wholeFinishTime));
             }
 
-            return ResponseVO.buildSuccess(resourceGanttItems);
+            ArrayList<ResourceGanttItem> result = new ArrayList<>();
+            for (String resourceName : resourceNames) {
+                ResourceGanttItem resourceGanttItem = new ResourceGanttItem();
+                resourceGanttItem.setName(resourceName);
+                Date fromDate = DateUtil.localDateTime2Date(endDateTime), toDate = DateUtil.localDateTime2Date(startDateTime);
+                boolean delay = false;
+                String task = "";
+                for (ResourceGanttItem tmp : resourceGanttItems) {
+                    if (tmp.getName().equals(resourceName)) {
+                        delay = tmp.isDelay();
+                        task = tmp.getTask();
+                        if (tmp.getFromDate().before(fromDate)) {
+                            fromDate = tmp.getFromDate();
+                        }
+                        if (tmp.getToDate().after(toDate)) {
+                            toDate = tmp.getToDate();
+                        }
+                    }
+                }
+                resourceGanttItem.setFromDate(fromDate);
+                resourceGanttItem.setToDate(toDate);
+                resourceGanttItem.setDelay(delay);
+                resourceGanttItem.setTask(task);
+                result.add(resourceGanttItem);
+            }
+
+            return ResponseVO.buildSuccess(result);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseVO.buildFailure("获取资源甘特图失败！");

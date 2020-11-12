@@ -2,17 +2,15 @@ package com.webplusgd.aps.service.impl;
 
 import com.webplusgd.aps.exception.NoPlanException;
 import com.webplusgd.aps.optaplanner.FCFSPlanner;
-import com.webplusgd.aps.optaplanner.OptaPlanner;
 import com.webplusgd.aps.optaplanner.ScheduledTask;
+import com.webplusgd.aps.optaplanner.domain.resource.Resource;
 import com.webplusgd.aps.service.ResourceLoadService;
 import com.webplusgd.aps.utils.DateUtil;
 import com.webplusgd.aps.vo.ResourceLoadChart;
 import com.webplusgd.aps.vo.ResourceLoadItem;
-import com.webplusgd.aps.optaplanner.domain.resource.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -59,18 +57,18 @@ public class ResourceLoadServiceImpl implements ResourceLoadService {
             List<Integer> workTime = entry.getValue();
             List<Double> rates = new ArrayList<>();
             if ("Group".equals(currentResource.getType())) {
-                // 资源负载率=实际工作时间/可工作时间
-                rates = workTime.stream().map(o -> o * 1.0 / GROUP_WORK_TIME).collect(Collectors.toList());
+                // 资源负载率=实际工作时间/可工作时间*100
+                rates = workTime.stream().map(o -> o * 100.0 / GROUP_WORK_TIME).collect(Collectors.toList());
                 humanWorkTime += workTime.stream().mapToInt(t -> t * currentResource.getCapacity()).sum();
                 humanTime += currentResource.getCapacity() * GROUP_WORK_TIME * DAY_RANGE_LENGTH;
             } else {
-                rates = workTime.stream().map(o -> o * 1.0 / MACHINE_WORK_TIME).collect(Collectors.toList());
+                rates = workTime.stream().map(o -> o * 100.0 / MACHINE_WORK_TIME).collect(Collectors.toList());
                 machineWorkTime += workTime.stream().mapToInt(t -> t * currentResource.getCapacity()).sum();
                 machineTime += currentResource.getCapacity() * MACHINE_WORK_TIME * DAY_RANGE_LENGTH;
             }
             resourceLoadItemList.add(new ResourceLoadItem(DateUtil.date2LocalDate(startDate), currentResource.getName(), rates));
         }
-        return new ResourceLoadChart(humanWorkTime * 1.0 / humanTime,
-                machineWorkTime * 1.0 / machineTime, DateUtil.date2LocalDate(startDate), resourceLoadItemList);
+        return new ResourceLoadChart(humanWorkTime * 100.0 / humanTime,
+                machineWorkTime * 100.0 / machineTime, DateUtil.date2LocalDate(startDate), resourceLoadItemList);
     }
 }

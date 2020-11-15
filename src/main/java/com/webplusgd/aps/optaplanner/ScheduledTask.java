@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ScheduledTask {
+public class ScheduledTask implements Cloneable {
     private Order order;
 
     private Resource resource;
@@ -24,4 +24,15 @@ public class ScheduledTask {
      * 工艺路线的步骤
      */
     private int step;
+
+    public Object clone() {
+        ScheduledTask scheduledTask = null;
+        try {
+            scheduledTask = (ScheduledTask) super.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        return scheduledTask;
+    }
+
 }

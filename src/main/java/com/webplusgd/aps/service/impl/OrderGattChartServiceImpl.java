@@ -6,9 +6,7 @@ import com.webplusgd.aps.service.OrderGanttChartService;
 import com.webplusgd.aps.utils.DateUtil;
 import com.webplusgd.aps.vo.OrderGanttItem;
 import com.webplusgd.aps.vo.OrderGanttChart;
-import com.webplusgd.aps.vo.ResourceGanttItem;
 import com.webplusgd.aps.vo.ResponseVO;
-import lombok.Data;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -26,10 +24,15 @@ public class OrderGattChartServiceImpl implements OrderGanttChartService {
     @Override
     public ResponseVO<OrderGanttChart> getOrderGanttChart(Date date) {
         try {
-            List<ScheduledTask> scheduledTasks = fcfsPlanner.tryGetPlan();
+            List<ScheduledTask> totalScheduledTasks = fcfsPlanner.tryGetPlan();
 
-            if (scheduledTasks == null || scheduledTasks.size() == 0) {
+            if (totalScheduledTasks == null || totalScheduledTasks.size() == 0) {
                 return ResponseVO.buildFailure("还未进行排程！");
+            }
+
+            List<ScheduledTask> scheduledTasks = new ArrayList<>();
+            for (ScheduledTask scheduledTask : totalScheduledTasks) {
+                scheduledTasks.add((ScheduledTask) scheduledTask.clone());
             }
 
             ArrayList<OrderGanttItem> orderGanttItems = new ArrayList<>();
@@ -57,7 +60,7 @@ public class OrderGattChartServiceImpl implements OrderGanttChartService {
                         goal += scheduledTask.getOrder().getProduct().getStandardCapacity();
                     }
                 }
-                
+
                 int progress = (int) (archived * 100 / goal);
                 int progressDelay = (int) (delayed * 100 / goal);
                 orderGanttItem.setProgress(progress);

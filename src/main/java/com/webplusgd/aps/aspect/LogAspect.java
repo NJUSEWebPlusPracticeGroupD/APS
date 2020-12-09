@@ -3,7 +3,6 @@ package com.webplusgd.aps.aspect;
 
 import com.webplusgd.aps.annotation.Log;
 import com.webplusgd.aps.properties.ApsProperties;
-import com.webplusgd.aps.service.LogService;
 import com.webplusgd.aps.utils.HttpContextUtil;
 import com.webplusgd.aps.utils.IPUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +12,6 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
@@ -35,8 +33,6 @@ public class LogAspect {
         this.apsProperties = apsProperties;
     }
 
-    @Autowired
-    private LogService logService;
 
     @Pointcut("@annotation(com.webplusgd.aps.annotation.Log)")
     public void pointcut() {
@@ -62,12 +58,13 @@ public class LogAspect {
         // 获取 访问url与方法类型
         String uri = request.getRequestURI();
         String requestMethod = request.getMethod();
+        String query = request.getQueryString();
         // 设置 IP 地址
         String ip = IPUtil.getIpAddr(request);
         // 执行时长(毫秒)
         long time = System.currentTimeMillis() - beginTime;
         if (apsProperties.isOpenAopLog()) {
-            log.info("【{}】IP:{} 访问 uri 为 [{}]，方法类型为 {} 的接口 用时为 {}", comment, ip, uri, requestMethod, time);
+            log.info("【{}】IP:{} 访问 uri 为 [{}] ，方法类型为 {} 的接口 用时为 {}，query为 {}，body为 {}", comment, ip, uri, requestMethod, time, query);
         }
         return result;
     }

@@ -27,7 +27,6 @@ public interface ChartApi {
      * @return
      */
     @Operation(summary = "获取资源甘特图")
-    @Log("获取资源甘特图")
     ResponseVO<ArrayList<ResourceGanttItem>> getResourceGanttChart(
             @DateTimeFormat(pattern = "yyyy-MM-dd", iso = DateTimeFormat.ISO.DATE)
             @Parameter(description = "当前查看日期", example = "2018-09-10")
@@ -40,7 +39,6 @@ public interface ChartApi {
      * @return
      */
     @Operation(summary = "获取订单甘特图", tags = {"Chart"})
-    @Log("获取订单甘特图")
     ResponseVO<OrderGanttChart> getOrderGanttChart(
             @DateTimeFormat(pattern = "yyyy-MM-dd", iso = DateTimeFormat.ISO.DATE)
             @Parameter(description = "当前查看日期", example = "2018-09-10")
@@ -53,7 +51,6 @@ public interface ChartApi {
      * @return
      */
     @Operation(summary = "获取资源负载图")
-    @Log("获取资源负载图")
     ResponseVO<ResourceLoadChart> getResourceLoadChart(
             @DateTimeFormat(pattern = "yyyy-MM-dd", iso = DateTimeFormat.ISO.DATE)
             @Parameter(description = "当前查看日期", example = "2018-09-10")

@@ -1,5 +1,6 @@
 package com.webplusgd.aps.controller;
 
+import com.webplusgd.aps.annotation.Log;
 import com.webplusgd.aps.api.FormApi;
 import com.webplusgd.aps.service.OrderPlanFormService;
 import com.webplusgd.aps.service.OrderProduceRelationFormService;
@@ -33,6 +34,7 @@ public class FormController implements FormApi {
 
     @Override
     @GetMapping("/getOrderPlanForm")
+    @Log("获取订单计划表")
     public ResponseVO<ArrayList<OrderPlanItem>> getOrderPlanForm() {
 
         return orderPlanFormService.getOrderPlanForm();
@@ -40,12 +42,14 @@ public class FormController implements FormApi {
 
     @Override
     @GetMapping("/getOrderProduceRelationForm")
+    @Log("获取订单生产单关系表")
     public ResponseVO<ArrayList<ResourceProduceItem>> getOrderProduceRelationForm(@RequestParam Date date, @RequestParam String orderId) {
         return orderProduceRelationFormService.getOrderProduceRelationForm(date,orderId);
     }
 
     @Override
     @GetMapping("/getProduceForm")
+    @Log("获取生产单")
     public ResponseVO<ArrayList<ResourceProduceItem>> getProduceForm(@RequestParam Date date) {
 
 
@@ -54,6 +58,7 @@ public class FormController implements FormApi {
 
     @Override
     @GetMapping("/getProduceResourceForm")
+    @Log("获取生产单（订单）资源关系表")
     public ResponseVO<OrderResourceForm> getProduceResourceForm() {
         return produceResourceFormService.getProduceResourceForm();
     }

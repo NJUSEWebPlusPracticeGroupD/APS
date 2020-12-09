@@ -133,7 +133,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/apsdb?characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&rewriteBatchedStatements=true&allowMultiQueries=true
     username: root
-    password: 981209880522Ff
+    password: LWJsteve98
 server:
   port: 5200
   http2:

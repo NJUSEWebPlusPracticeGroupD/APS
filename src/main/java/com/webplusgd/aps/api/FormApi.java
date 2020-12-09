@@ -22,7 +22,6 @@ public interface FormApi {
      * @return
      */
     @Operation(summary = "获取订单计划表")
-    @Log("获取订单计划表")
     ResponseVO<ArrayList<OrderPlanItem>> getOrderPlanForm();
 
     /**
@@ -32,7 +31,6 @@ public interface FormApi {
      * @return
      */
     @Operation(summary = "获取订单生产单关系表")
-    @Log("获取订单生产单关系表")
     ResponseVO<ArrayList<ResourceProduceItem>> getOrderProduceRelationForm(
             @DateTimeFormat(pattern = "yyyy-MM-dd", iso = DateTimeFormat.ISO.DATE)
             @Parameter(description = "当前查看日期", example = "2018-09-10")
@@ -48,7 +46,6 @@ public interface FormApi {
      * @return
      */
     @Operation(summary = "获取生产单")
-    @Log("获取生产单")
     ResponseVO<ArrayList<ResourceProduceItem>> getProduceForm(
             @DateTimeFormat(pattern = "yyyy-MM-dd", iso = DateTimeFormat.ISO.DATE)
             @Parameter(description = "当前查看日期", example = "2018-09-10")
@@ -60,6 +57,5 @@ public interface FormApi {
      * @return
      */
     @Operation(summary = "获取生产单（订单）资源关系表")
-    @Log("获取生产单（订单）资源关系表")
     ResponseVO<OrderResourceForm> getProduceResourceForm();
 }

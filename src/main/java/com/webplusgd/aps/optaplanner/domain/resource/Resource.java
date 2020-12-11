@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 /**
  * @author Rollingegg
  * @create_time 11/7/2020 11:09 AM
@@ -12,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Resource {
+public class Resource implements Serializable {
     /**
      * 群组人数/机器数量，代表生产能力
      */

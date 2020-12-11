@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 
@@ -14,7 +15,7 @@ import java.time.LocalTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Shift {
+public class Shift implements Serializable {
     private DayOfWeek startDay;
     private DayOfWeek endDay;
     private LocalTime startTime;

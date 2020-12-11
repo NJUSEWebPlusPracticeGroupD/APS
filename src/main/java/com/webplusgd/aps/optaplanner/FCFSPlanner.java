@@ -8,6 +8,7 @@ import com.webplusgd.aps.optaplanner.domain.resource.MachineResource;
 import com.webplusgd.aps.optaplanner.domain.resource.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
@@ -169,7 +170,9 @@ public class FCFSPlanner implements Planner {
     }
 
     @Override
+    @Cacheable("planCache")
     public List<ScheduledTask> waitForPlan() {
+        System.out.println("wait for plan");
         return planList;
     }
 }

@@ -3,7 +3,7 @@ package com.webplusgd.aps.optaplanner.domain;
 import com.webplusgd.aps.optaplanner.domain.resource.GroupResource;
 import com.webplusgd.aps.optaplanner.domain.resource.MachineResource;
 import com.webplusgd.aps.optaplanner.optional.TaskDifficultyComparator;
-import liquibase.pro.packaged.I;
+//import liquibase.pro.packaged.I;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -170,7 +170,7 @@ public class FCFSPlanner implements Planner {
     }
 
     @Override
-    @Cacheable("planCache")
+    @Cacheable(value = "planCache",unless = "#result == null")
     public List<ScheduledTask> waitForPlan() {
         System.out.println("wait for plan");
         return planList;

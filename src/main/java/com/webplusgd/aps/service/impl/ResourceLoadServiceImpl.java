@@ -2,6 +2,7 @@ package com.webplusgd.aps.service.impl;
 
 import com.webplusgd.aps.exception.NoPlanException;
 import com.webplusgd.aps.optaplanner.FCFSPlanner;
+import com.webplusgd.aps.optaplanner.OptaPlanner;
 import com.webplusgd.aps.optaplanner.ScheduledTask;
 import com.webplusgd.aps.optaplanner.domain.resource.Resource;
 import com.webplusgd.aps.service.ResourceLoadService;
@@ -25,12 +26,12 @@ public class ResourceLoadServiceImpl implements ResourceLoadService {
     private static final Integer MACHINE_WORK_TIME = 24;
     private static final Integer DAY_RANGE_LENGTH = 7;
     @Autowired
-    private FCFSPlanner planner;
+    private OptaPlanner planner;
 
     @Override
     public ResourceLoadChart getResourceLoadChart(Date startDate) throws NoPlanException {
         // TODO 返回资源负载图
-        List<ScheduledTask> output = planner.tryGetPlan();
+        List<ScheduledTask> output = planner.waitForPlan();
         if (output == null) {
             throw new NoPlanException("获取资源负载图失败");
         }

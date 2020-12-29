@@ -2,6 +2,7 @@ package com.webplusgd.aps.controller;
 
 import com.webplusgd.aps.annotation.Log;
 import com.webplusgd.aps.optaplanner.FCFSPlanner;
+import com.webplusgd.aps.optaplanner.OptaPlanner;
 import com.webplusgd.aps.utils.DateUtil;
 import com.webplusgd.aps.vo.ResponseVO;
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,7 +20,7 @@ import java.util.Date;
 @RequestMapping("/api/aps")
 public class APSController {
     @Autowired
-    private FCFSPlanner planner;
+    private OptaPlanner planner;
 
     @Operation(summary = "启动排程")
     @Log("启动排程")

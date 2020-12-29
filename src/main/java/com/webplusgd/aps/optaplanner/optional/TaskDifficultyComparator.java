@@ -12,6 +12,9 @@ import java.util.Comparator;
 public class TaskDifficultyComparator implements Comparator<Task> {
     @Override
     public int compare(Task o1, Task o2) {
+        if(o1.getOrder().getOrderId()==0||o2.getOrder().getOrderId()==0){
+            return 0;
+        }
         return o2.getOrder().getTermOfDeliver().compareTo(o1.getOrder().getTermOfDeliver());
     }
 }

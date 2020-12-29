@@ -26,4 +26,9 @@ class OptaPlannerTest {
         planner.startSchedule(LocalDateTime.of(2018,10,10,7,0));
         List<ScheduledTask> plan=planner.waitForPlan();
     }
+    @Test
+    void tryGetPlan(){
+        planner.startSchedule(LocalDateTime.of(2018,10,10,7,0));
+//        List<ScheduledTask> plan=planner.tryGetPlan();
+    }
 }

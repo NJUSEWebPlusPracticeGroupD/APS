@@ -18,7 +18,7 @@ class DataManagerTest {
 
     @Test
     void generateProblem() {
-        ApsSolution problem=dataManager.generateProblem(LocalDateTime.of(2018,11,1,0,0));
+        ApsSolution problem=dataManager.generateStandardProblem(LocalDateTime.of(2018,11,1,0,0));
         assertEquals(24*58,problem.getTimeslotList().size());
     }
 }

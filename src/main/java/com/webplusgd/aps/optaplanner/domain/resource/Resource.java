@@ -19,17 +19,20 @@ public class Resource {
     private int capacity;
     protected String name;
     protected Shift shift;
-    protected String type="undefined";
+    protected String type=UNDEFINED_TYPE;
 
+    public final static String UNDEFINED_TYPE = "Undefined";
+    public final static String GROUP_TYPE = "Group";
+    public final static String MACHINE_TYPE = "Machine";
+    @Override
+    public int hashCode() {
+        return name.hashCode();
+    }
     @Override
     public boolean equals(Object obj) {
         return obj instanceof Resource && name.equals(((Resource) obj).name);
     }
 
-    @Override
-    public int hashCode() {
-        return name.hashCode();
-    }
 
     @Override
     public String toString() {

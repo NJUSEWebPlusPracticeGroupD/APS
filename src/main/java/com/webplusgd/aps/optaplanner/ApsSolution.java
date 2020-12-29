@@ -1,5 +1,6 @@
 package com.webplusgd.aps.optaplanner;
 
+import com.webplusgd.aps.optaplanner.domain.resource.Resource;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import com.webplusgd.aps.optaplanner.domain.Order;
@@ -15,6 +16,7 @@ import org.optaplanner.core.api.domain.valuerange.ValueRangeProvider;
 import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Rollingegg
@@ -24,21 +26,13 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 public class ApsSolution {
-//    @ValueRangeProvider(id = "orderRange")
-//    @ProblemFactCollectionProperty
+    @ValueRangeProvider(id = "orderRange")
+    @ProblemFactCollectionProperty
     private List<Order> orderList;
 
-    @ValueRangeProvider(id = "groupRange")
-    @ProblemFactCollectionProperty
-    private List<GroupResource> groupResourceList;
-
-    @ValueRangeProvider(id = "machineRange")
-    @ProblemFactCollectionProperty
-    private List<MachineResource> machineResourceList;
-
-    @ValueRangeProvider(id = "timeslotRange")
-    @ProblemFactCollectionProperty
+    private List<Resource> resourceList;
     private List<Timeslot> timeslotList;
+    private Map<Integer, List<Order>> orderMap;
 
     @PlanningEntityCollectionProperty
     private List<Task> taskList;
@@ -46,11 +40,11 @@ public class ApsSolution {
     @PlanningScore
     private HardSoftScore score;
 
-    public ApsSolution(List<Order> orderList, List<GroupResource> groupResourceList, List<MachineResource> machineResourceList, List<Timeslot> timeslotList, List<Task> taskList) {
+    public ApsSolution(List<Order> orderList, List<Resource> resourceList, List<Timeslot> timeslotList, Map<Integer, List<Order>> orderMap, List<Task> taskList) {
         this.orderList = orderList;
-        this.groupResourceList = groupResourceList;
-        this.machineResourceList = machineResourceList;
+        this.resourceList = resourceList;
         this.timeslotList = timeslotList;
+        this.orderMap = orderMap;
         this.taskList = taskList;
     }
 }

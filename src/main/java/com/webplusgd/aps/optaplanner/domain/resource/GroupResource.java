@@ -14,6 +14,6 @@ import com.webplusgd.aps.optaplanner.domain.Shift;
 @NoArgsConstructor
 public class GroupResource extends Resource{
     public GroupResource(int capacity, String name, Shift shift) {
-        super(capacity, name, shift, "Group");
+        super(capacity, name, shift, GROUP_TYPE);
     }
 }

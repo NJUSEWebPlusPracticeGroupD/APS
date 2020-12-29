@@ -14,6 +14,6 @@ import com.webplusgd.aps.optaplanner.domain.Shift;
 @NoArgsConstructor
 public class MachineResource extends Resource{
     public MachineResource(int capacity, String name, Shift shift) {
-        super(capacity, name, shift, "Machine");
+        super(capacity, name, shift, MACHINE_TYPE);
     }
 }

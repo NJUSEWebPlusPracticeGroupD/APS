@@ -17,10 +17,11 @@
     <entityClass>com.webplusgd.aps.optaplanner.domain.Task</entityClass>
 
     <scoreDirectorFactory>
-        <constraintProviderClass>com.webplusgd.aps.optaplanner.score.ApsConstraintProvider</constraintProviderClass>
+<!--        <constraintProviderClass>com.webplusgd.aps.optaplanner.score.ApsConstraintProvider</constraintProviderClass>-->
+        <easyScoreCalculatorClass>com.webplusgd.aps.optaplanner.score.ApsScoreCalculator</easyScoreCalculatorClass>
     </scoreDirectorFactory>
 
-    <!--    <termination>-->
-    <!--        <spentLimit>PT5S</spentLimit>-->
-    <!--    </termination>-->
+    <termination>
+        <spentLimit>PT90S</spentLimit>
+    </termination>
 </solver>

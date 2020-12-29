@@ -28,6 +28,16 @@ public class Order {
      */
     private LocalDateTime finishTime;
 
+    public static Order defaultOrder;
+
+    public static Order getDefaultOrder() {
+        if (defaultOrder == null) {
+            defaultOrder = new Order();
+            defaultOrder.orderId = 0;
+        }
+        return defaultOrder;
+    }
+
     public int getRequiredPeople(){
         return product.getMinimumStaff();
     }

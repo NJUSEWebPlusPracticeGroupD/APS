@@ -5,6 +5,8 @@ import com.webplusgd.aps.dao.OrderRepository;
 import com.webplusgd.aps.dao.ResourceRepository;
 import com.webplusgd.aps.domain.Bom;
 import com.webplusgd.aps.domain.Order;
+import com.webplusgd.aps.optaplanner.domain.resource.Resource;
+import com.webplusgd.aps.optaplanner.utils.DataUtil;
 import com.webplusgd.aps.utils.DateUtil;
 import com.webplusgd.aps.optaplanner.domain.Product;
 import com.webplusgd.aps.optaplanner.domain.Shift;
@@ -17,7 +19,9 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -55,86 +59,12 @@ public class DataManager {
         this.resourceRepository = resourceRepository;
     }
 
-    public ApsSolution generateProblem(LocalDateTime currentTime) {
-        // 取所有订单
-        List<Order> orderListFromDb = orderRepository.findAll();
-        // 组装成对应Order的关系
-        List<com.webplusgd.aps.optaplanner.domain.Order> orderList = new ArrayList<>();
-        LocalDateTime latestEndTime = currentTime;
-        for (Order orderFromDb : orderListFromDb) {
-            List<Bom> order2BomFromDb = bomRepository.findByMaterialId(orderFromDb.getMaterialId());
-            if (order2BomFromDb.size() == 0) {
-                continue;
-            }
-            order2BomFromDb = order2BomFromDb.stream().filter(bom -> SELECTED_CRAFT.equals(bom.getCraft())).collect(Collectors.toList());
-            //  取所需资源
-            List<String> groupResourceIdList = order2BomFromDb.stream().filter(bom -> bom.getResourceType() == 0).map(Bom::getResourceId).collect(Collectors.toList());
-            List<String> machineResourceIdList = order2BomFromDb.stream().filter(bom -> bom.getResourceType() == 1).map(Bom::getResourceId).collect(Collectors.toList());
-            List<GroupResource> groupResourceList = resourceRepository.findAllById(groupResourceIdList).stream().map(resource -> new GroupResource(resource.getCount(), resource.getId(), getResourceShift(resource.getShiftCode()))).collect(Collectors.toList());
-            List<MachineResource> machineResourceList = resourceRepository.findAllById(machineResourceIdList).stream().map(resource -> new MachineResource(resource.getCount(), resource.getId(), getResourceShift(resource.getShiftCode()))).collect(Collectors.toList());
-            // 拆分机器资源,重新命名为 linexx-i
-            List<MachineResource> splitResourceList = new ArrayList<>();
-            for (MachineResource machineResource : machineResourceList) {
-                for (int i = 0; i < machineResource.getCapacity(); i++) {
-                    splitResourceList.add(new MachineResource(1, machineResource.getName() + "-" + i, machineResource.getShift()));
-                }
-            }
-            com.webplusgd.aps.optaplanner.domain.Order tmpOrder = new com.webplusgd.aps.optaplanner.domain.Order(orderFromDb.getOrderId(),
-                    new Product(orderFromDb.getMaterialId(), groupResourceList, splitResourceList, order2BomFromDb.get(0).getCapacity(), order2BomFromDb.get(0).getQuota(), DEFAULT_STEP), orderFromDb.getOrderCount(),
-                    DateUtil.date2LocalDateTime(orderFromDb.getDeliveryDate()),
-                    null, null);
-            orderList.add(tmpOrder);
-            if (latestEndTime.isBefore(tmpOrder.getTermOfDeliver())) {
-                latestEndTime = tmpOrder.getTermOfDeliver();
-            }
-        }
-        latestEndTime = latestEndTime.plusDays(DAY_RANGE_LENGTH);
-        // 取订单对应的工艺路线
-        List<Integer> materialIdList = orderListFromDb.stream().map(Order::getMaterialId).collect(Collectors.toList());
-        List<Bom> bomListFromDb = bomRepository.findByMaterialIdIn(materialIdList);
-        //  取所需资源
-        List<String> groupResourceIdList = bomListFromDb.stream().filter(bom -> bom.getResourceType() == 0).map(Bom::getResourceId).collect(Collectors.toList());
-        List<String> machineResourceIdList = bomListFromDb.stream().filter(bom -> bom.getResourceType() == 1 && bom.getResourceId().startsWith("line")).map(Bom::getResourceId).collect(Collectors.toList());
-        List<GroupResource> groupResourceList = resourceRepository.findAllById(groupResourceIdList).stream().map(resource -> new GroupResource(resource.getCount(), resource.getId(), getResourceShift(resource.getShiftCode()))).collect(Collectors.toList());
-        List<MachineResource> machineResourceList = resourceRepository.findAllById(machineResourceIdList).stream().map(resource -> new MachineResource(resource.getCount(), resource.getId(), getResourceShift(resource.getShiftCode()))).collect(Collectors.toList());
-
-        // 拆分机器资源,重新命名为 linexx-i
-        List<MachineResource> splitResourceList = new ArrayList<>();
-        for (MachineResource machineResource : machineResourceList) {
-            for (int i = 0; i < machineResource.getCapacity(); i++) {
-                splitResourceList.add(new MachineResource(1, machineResource.getName() + "-" + i, machineResource.getShift()));
-            }
-        }
-
-        // 初始化timeslot
-        List<Timeslot> timeslotList = getTimeslotData(currentTime, latestEndTime, TASK_TIME_RANGE);
-        // 初始化Task分配实体，需要提前分配好order，这里先计算每个order按照标准生产速度最多需要多少个分配单元(!!!默认一倍速!!!)
-        int taskListSize = timeslotList.size() * groupResourceList.size();
-        List<Task> taskList = new ArrayList<>(taskListSize);
-        for (com.webplusgd.aps.optaplanner.domain.Order toAllocatedOrder : orderList) {
-            int subOrderIndex = 0;
-            Product productBom = toAllocatedOrder.getProduct();
-//            int availableHumanNum = productBom.getAvailableGroupResource().stream().mapToInt(GroupResource::getCapacity).sum();
-            int remainHours = (int) Math.ceil(1.0 * toAllocatedOrder.getOrderNum() / productBom.getStandardCapacity());
-            while (remainHours > TASK_TIME_RANGE) {
-                taskList.add(new Task(toAllocatedOrder, toAllocatedOrder.getOrderId() + "_" + (++subOrderIndex), TASK_TIME_RANGE));
-                remainHours -= TASK_TIME_RANGE;
-            }
-            // 按照一倍速生产订单，最后可能切到余留n小时，那么这个子任务只需工作n小时就能完成订单了
-            taskList.add(new Task(toAllocatedOrder, toAllocatedOrder.getOrderId() + "_" + (++subOrderIndex), remainHours));
-//            int allocatedNum = (int) Math.ceil(1.0 * toAllocatedOrder.getOrderNum() / productBom.getStandardCapacity() / TASK_TIME_RANGE);
-//            for (int i = 0; i < allocatedNum; i++) {
-//                taskList.add(new Task(toAllocatedOrder, toAllocatedOrder.getOrderId() + "_" + i));
-//            }
-        }
-        return new ApsSolution(orderList, groupResourceList, splitResourceList, timeslotList, taskList);
-    }
-
     public ApsSolution generateStandardProblem(LocalDateTime currentTime) {
         // 取所有订单
         List<Order> orderListFromDb = orderRepository.findAll();
         // 组装成对应Order的关系
-        List<com.webplusgd.aps.optaplanner.domain.Order> orderList = new ArrayList<>();
+        List<com.webplusgd.aps.optaplanner.domain.Order> orderList = new ArrayList<>(orderListFromDb.size()*2);
+        orderList.add(com.webplusgd.aps.optaplanner.domain.Order.getDefaultOrder());
         LocalDateTime latestEndTime = currentTime;
         for (Order orderFromDb : orderListFromDb) {
             List<Bom> order2BomFromDb = bomRepository.findByMaterialId(orderFromDb.getMaterialId());
@@ -143,37 +73,46 @@ public class DataManager {
             }
             order2BomFromDb = order2BomFromDb.stream().filter(bom -> SELECTED_CRAFT.equals(bom.getCraft())).collect(Collectors.toList());
             //  取所需资源
-            List<String> groupResourceIdList = order2BomFromDb.stream().filter(bom -> bom.getResourceType() == 0).map(Bom::getResourceId).collect(Collectors.toList());
-            List<String> machineResourceIdList = order2BomFromDb.stream().filter(bom -> bom.getResourceType() == 1).map(Bom::getResourceId).collect(Collectors.toList());
+            List<String> groupResourceIdList = new ArrayList<>(order2BomFromDb.stream()
+                    .filter(bom -> bom.getResourceType() == 0 && bom.getResourceId().contains("-"))
+                    .map(Bom::getResourceId)
+                    .collect(Collectors.toSet()));
+            List<String> machineResourceIdList = new ArrayList<>(order2BomFromDb.stream()
+                    .filter(bom -> bom.getResourceType() == 1 && bom.getResourceId().startsWith("line"))
+                    .map(Bom::getResourceId)
+                    .collect(Collectors.toSet()));
             List<GroupResource> groupResourceList = resourceRepository.findAllById(groupResourceIdList).stream().map(resource -> new GroupResource(resource.getCount(), resource.getId(), getResourceShift(resource.getShiftCode()))).collect(Collectors.toList());
             List<MachineResource> machineResourceList = resourceRepository.findAllById(machineResourceIdList).stream().map(resource -> new MachineResource(resource.getCount(), resource.getId(), getResourceShift(resource.getShiftCode()))).collect(Collectors.toList());
             com.webplusgd.aps.optaplanner.domain.Order tmpOrder = new com.webplusgd.aps.optaplanner.domain.Order(orderFromDb.getOrderId(),
                     new Product(orderFromDb.getMaterialId(), groupResourceList, machineResourceList, order2BomFromDb.get(0).getCapacity(), order2BomFromDb.get(0).getQuota(), DEFAULT_STEP), orderFromDb.getOrderCount(),
                     DateUtil.date2LocalDateTime(orderFromDb.getDeliveryDate()),
                     null, null);
-            orderList.add(tmpOrder);
-            if (latestEndTime.isBefore(tmpOrder.getTermOfDeliver())) {
-                latestEndTime = tmpOrder.getTermOfDeliver();
+            if(tmpOrder.getProduct().isValid()) {
+                orderList.add(tmpOrder);
+                if (latestEndTime.isBefore(tmpOrder.getTermOfDeliver())) {
+                    latestEndTime = tmpOrder.getTermOfDeliver();
+                }
             }
         }
         latestEndTime = latestEndTime.plusDays(DAY_RANGE_LENGTH);
-        // 取订单对应的工艺路线
-        List<Integer> materialIdList = orderListFromDb.stream().map(Order::getMaterialId).collect(Collectors.toList());
-        List<Bom> bomListFromDb = bomRepository.findByMaterialIdIn(materialIdList);
-        //  取所需资源
-        List<String> groupResourceIdList = bomListFromDb.stream().filter(bom -> bom.getResourceType() == 0 && bom.getResourceId().contains("（")).map(Bom::getResourceId).collect(Collectors.toList());
-        List<String> machineResourceIdList = bomListFromDb.stream().filter(bom -> bom.getResourceType() == 1 && bom.getResourceId().startsWith("line")).map(Bom::getResourceId).collect(Collectors.toList());
-        List<GroupResource> groupResourceList = resourceRepository.findAllById(groupResourceIdList).stream().map(resource -> new GroupResource(resource.getCount(), resource.getId(), getResourceShift(resource.getShiftCode()))).collect(Collectors.toList());
-        List<MachineResource> machineResourceList = resourceRepository.findAllById(machineResourceIdList).stream().map(resource -> new MachineResource(resource.getCount(), resource.getId(), getResourceShift(resource.getShiftCode()))).collect(Collectors.toList());
+        Set<GroupResource> groupResourceSet=new HashSet<>();
+        Set<MachineResource> machineResourceSet=new HashSet<>();
+        for(com.webplusgd.aps.optaplanner.domain.Order order:orderList){
+            if(order.getOrderId()!=0) {
+                groupResourceSet.addAll(order.getProduct().getAvailableGroupResource());
+                machineResourceSet.addAll(order.getProduct().getAvailableMachineResource());
+            }
+        }
+        List<GroupResource> groupResourceList = new ArrayList<>(groupResourceSet);
+        List<MachineResource> machineResourceList = new ArrayList<>(machineResourceSet);
+        List<Resource> resourceList = new ArrayList<>();
+        resourceList.addAll(groupResourceList);
+        resourceList.addAll(machineResourceList);
 
         // 初始化timeslot
         List<Timeslot> timeslotList = getTimeslotData(currentTime, latestEndTime, 1);
-        int taskListSize = timeslotList.size() * groupResourceList.size();
-        List<Task> taskList = new ArrayList<>(taskListSize);
-        for (int i = 0; i < taskListSize; i++) {
-            taskList.add(new Task());
-        }
-        return new ApsSolution(orderList, groupResourceList, machineResourceList, timeslotList, taskList);
+        List<Task> taskList = getInitialTask(resourceList, timeslotList);
+        return new ApsSolution(orderList, resourceList, timeslotList, DataUtil.groupOrderByOrderId(orderList), taskList);
     }
 
     /**
@@ -207,4 +146,23 @@ public class DataManager {
                 return Shift.ALL_TIME_SHIFT;
         }
     }
+
+    private List<Task> getInitialTask(List<Resource> resourceList,
+                                      List<Timeslot> timeslotList) {
+        // 初始化排程单元(将计划单元按照时间和资源进行组织，大小为时间片数量*资源数量)
+        List<Task> taskList = new ArrayList<>(resourceList.size() * timeslotList.size());
+        com.webplusgd.aps.optaplanner.domain.Order defaultOrder = com.webplusgd.aps.optaplanner.domain.Order.getDefaultOrder();
+        Task task;
+        for (Timeslot timeslot : timeslotList) {
+            for (com.webplusgd.aps.optaplanner.domain.resource.Resource resource : resourceList) {
+                if (Shift.shiftTimeslotConflict(resource.getShift(), timeslot)) {
+                    continue;
+                }
+                task = new Task(defaultOrder, resource, timeslot);
+                taskList.add(task);
+            }
+        }
+        return taskList;
+    }
+
 }

@@ -9,7 +9,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@ActiveProfiles("steve")
+@ActiveProfiles("toby")
 @SpringBootTest
 class OptaPlannerTest {
 

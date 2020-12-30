@@ -11,7 +11,8 @@ import com.webplusgd.aps.optaplanner.utils.DataUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.optaplanner.core.api.score.Score;
 import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore;
-import org.optaplanner.core.impl.score.director.easy.EasyScoreCalculator;
+import org.optaplanner.core.api.score.calculator.EasyScoreCalculator;
+//import org.optaplanner.core.impl.score.director.easy.EasyScoreCalculator;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -21,7 +22,7 @@ import java.util.*;
  * @create_time 12/27/2020 4:28 PM
  */
 @Slf4j
-public class ApsScoreCalculator implements EasyScoreCalculator<ApsSolution> {
+public class ApsScoreCalculator implements EasyScoreCalculator<ApsSolution,HardSoftScore> {
     // HardScore
     private static final int CANNOT_FINISH_PENALIZE = 10;//产量必须合格，订单须完成
     private static final int PRODUCT_RESOURCE_CONFLICT_PENALIZE = 3;// 资源必须是生产工艺指定的

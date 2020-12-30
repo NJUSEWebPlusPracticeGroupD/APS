@@ -16,7 +16,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@ActiveProfiles("steve")
+@ActiveProfiles("toby")
 @SpringBootTest
 @Slf4j
 class APSControllerTest {
@@ -42,7 +42,7 @@ class APSControllerTest {
                 .andReturn();
         log.info(mvcResult.getResponse().getContentAsString());
         MvcResult mvcResult2 = mockMvc2.perform(MockMvcRequestBuilders.get("/api/chart//getResourceLoadChart")
-                .param("startDate", "2018-11-10"))
+                .param("startDate", "2018-10-11"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(MockMvcResultHandlers.print())
                 .andReturn();

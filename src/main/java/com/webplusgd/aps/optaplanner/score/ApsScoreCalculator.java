@@ -124,7 +124,7 @@ public class ApsScoreCalculator implements EasyScoreCalculator<ApsSolution,HardS
                         if (Product.isRedundantArrange(humanArranged.get(j), lineArranged.get(j), orderMap.get(orderId).get(j).getProduct())) {
                             // 冗余资源，扣分
                             //有问题？
-                            softScore -= REDUNDANT_RESOURCE;
+                            hardScore -= REDUNDANT_RESOURCE;
                             score[3] += 1;
                         }
                         // 根据前后工序产量约束计算评分

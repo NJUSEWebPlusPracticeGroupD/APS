@@ -22,7 +22,7 @@ public class ProduceResourceFormServiceImpl implements ProduceResourceFormServic
     OrderPlanFormServiceImpl orderPlanFormService;
 
     @Autowired
-    FCFSPlanner fcfsPlanner;
+    OptaPlanner planner;
 
     public List<ScheduledTask> plan;
 
@@ -31,7 +31,7 @@ public class ProduceResourceFormServiceImpl implements ProduceResourceFormServic
     public ResponseVO<OrderResourceForm> getProduceResourceForm() {
 
         //todo: 获取plan
-        plan = fcfsPlanner.waitForPlan();
+        plan = planner.waitForPlan();
 
         if(plan==null||plan.size()==0){
             return ResponseVO.buildFailure("还未进行排程");

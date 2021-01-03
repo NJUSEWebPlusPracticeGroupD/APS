@@ -64,7 +64,6 @@ public class DataManager {
         List<Order> orderListFromDb = orderRepository.findAll();
         // 组装成对应Order的关系
         List<com.webplusgd.aps.optaplanner.domain.Order> orderList = new ArrayList<>(orderListFromDb.size()*2);
-        orderList.add(com.webplusgd.aps.optaplanner.domain.Order.getDefaultOrder());
         LocalDateTime latestEndTime = currentTime;
         for (Order orderFromDb : orderListFromDb) {
             List<Bom> order2BomFromDb = bomRepository.findByMaterialId(orderFromDb.getMaterialId());

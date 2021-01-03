@@ -31,7 +31,7 @@ public class ResourceLoadServiceImpl implements ResourceLoadService {
     @Override
     public ResourceLoadChart getResourceLoadChart(Date startDate) throws NoPlanException {
         // TODO 返回资源负载图
-        List<ScheduledTask> output = planner.waitForPlan();
+        List<ScheduledTask> output = planner.tryGetPlan();
         if (output == null) {
             throw new NoPlanException("获取资源负载图失败");
         }

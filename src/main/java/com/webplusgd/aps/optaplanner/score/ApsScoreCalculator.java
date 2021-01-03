@@ -8,11 +8,11 @@ import com.webplusgd.aps.optaplanner.domain.resource.GroupResource;
 import com.webplusgd.aps.optaplanner.domain.resource.MachineResource;
 import com.webplusgd.aps.optaplanner.domain.resource.Resource;
 import com.webplusgd.aps.optaplanner.utils.DataUtil;
+import com.webplusgd.aps.utils.DateUtil;
+import javafx.util.Pair;
 import lombok.extern.slf4j.Slf4j;
-import org.optaplanner.core.api.score.Score;
 import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore;
 import org.optaplanner.core.api.score.calculator.EasyScoreCalculator;
-//import org.optaplanner.core.impl.score.director.easy.EasyScoreCalculator;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -34,6 +34,7 @@ public class ApsScoreCalculator implements EasyScoreCalculator<ApsSolution,HardS
     private static final int STEP_OVERFLOW_SOFT_PENALIZE = 1;// 后续工序的工时产量会受前序已有产量影响，最好一个工时产能拉满
     private static final int OVERTIME_PENALIZE = 5;// 订单逾期
     private static final int RESOURCE_BALANCE = 1; // 资源平衡使用，避免资源安排集中于有限的某几个资源
+    private static final int RESOURCE_USAGE_PENALIZE = 1; // todo 资源利用率
     private static final int KEEP_IN_TIME_STEP_PROCESS = 1;// todo 订单生产安排的集中or分散？
 
     @Override
@@ -66,6 +67,8 @@ public class ApsScoreCalculator implements EasyScoreCalculator<ApsSolution,HardS
         int production; // 工时产量
         List<Task> list; // 订单的排程计划
         Task task;
+        Integer materialId; // 工艺路线/产品id
+        Map<Integer, List<Pair<LocalDateTime,LocalDateTime>>> productFinishTime = new HashMap<>();//记录同一产品不同订单的完成时间
         for (Integer orderId : orderMap.keySet()) {
             list = orderTaskMap.get(orderId);
             if (null == list) {
@@ -153,13 +156,28 @@ public class ApsScoreCalculator implements EasyScoreCalculator<ApsSolution,HardS
                     }
                 }
             }
+            // 检查产量，记录完成时间
             for (int i = 0; i < count.size(); i++) {
                 if (count.get(i) < orderMap.get(orderId).get(i).getOrderNum()) {
                     hardScore -= CANNOT_FINISH_PENALIZE;
                     score[0] += 1;
-//                    log.info(orderId + " " + i);
+//                    log.info(orderId + " " + i + " not finished");
+                } else if (i == count.size() - 1) {
+                    materialId = orderMap.get(orderId).get(0).getProduct().getMaterialId();
+                    if (!productFinishTime.containsKey(materialId)) {
+                        productFinishTime.put(materialId, new ArrayList<>());
+                    }
+                    productFinishTime.get(materialId).add(new Pair<>(
+                            list.get(list.size() - 1).getTimeslot().getEndDateTime(),
+                            list.get(list.size()-1).getOrder().getTermOfDeliver()));
                 }
             }
+        }
+        // 检查完成时间，让软约束负载均衡减去最晚完成时间与规定ddl之间的日期差
+        for(List<Pair<LocalDateTime,LocalDateTime>> pairList:productFinishTime.values()){
+            pairList.sort(Comparator.comparing(Pair::getKey));
+            Pair<LocalDateTime,LocalDateTime> latestPair = pairList.get(pairList.size()-1);
+            softScore-=(int) DateUtil.daysDiff(latestPair.getKey(),latestPair.getValue()) *RESOURCE_BALANCE;
         }
 //        log.info(Arrays.toString(score));
         return HardSoftScore.of(hardScore, softScore);

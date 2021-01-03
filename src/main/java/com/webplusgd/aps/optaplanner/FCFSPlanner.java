@@ -1,9 +1,6 @@
 package com.webplusgd.aps.optaplanner;
 
-import com.webplusgd.aps.optaplanner.domain.Order;
-import com.webplusgd.aps.optaplanner.domain.Shift;
-import com.webplusgd.aps.optaplanner.domain.Task;
-import com.webplusgd.aps.optaplanner.domain.Timeslot;
+import com.webplusgd.aps.optaplanner.domain.*;
 import com.webplusgd.aps.optaplanner.domain.resource.GroupResource;
 import com.webplusgd.aps.optaplanner.domain.resource.MachineResource;
 import com.webplusgd.aps.optaplanner.domain.resource.Resource;
@@ -15,6 +12,7 @@ import org.springframework.stereotype.Component;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Rollingegg
@@ -99,28 +97,16 @@ public class FCFSPlanner implements Planner {
                     humanCapacity += humanResource.getCapacity();
                 }
                 int lineNum = candidateLine.size();
-                int production = 0;
+                int production = Product.calculateProduction(humanCapacity,lineNum,order.getProduct());
                 List<Integer> rest = restAmount.get(order.getOrderId());
-                if (null == order.getProduct().getAvailableGroupResource()) {
-                    production = lineNum * order.getProduct().getStandardCapacity();
-                } else if (null == order.getProduct().getAvailableMachineResource()) {
-                    production = humanCapacity / order.getProduct().getMinimumStaff() * order.getProduct().getStandardCapacity();
-                } else {
-                    production = Math.min(lineNum, humanCapacity / order.getProduct().getMinimumStaff()) * order.getProduct().getStandardCapacity();
-                }
                 if (step > 1) {
                     production = Math.min(production, rest.get(step - 1) - rest.get(step - 2));
                 } else {
                     production = Math.min(rest.get(step - 1), production);
                 }
                 // 基于产能产量进行资源排程安排
-                humanCapacity = (int) Math.ceil(production * 1.0 / order.getProduct().getStandardCapacity()) * order.getProduct().getMinimumStaff();
-                lineNum = (int) Math.ceil(production * 1.0 / order.getProduct().getStandardCapacity());
+                Product.optimizeArrange(candidateHuman,candidateLine, order.getProduct(), production);
                 for (GroupResource humanResource : candidateHuman) {
-                    if (humanCapacity <= 0) {
-                        break;
-                    }
-                    humanCapacity -= humanResource.getCapacity();
                     result.add(new ScheduledTask(order, humanResource, timeslot, step));
                     // 构造排程任务
                     task=taskMap.get(timeslot).get(humanResource);
@@ -128,10 +114,6 @@ public class FCFSPlanner implements Planner {
                     occupied.add(humanResource);
                 }
                 for (MachineResource lineResource : candidateLine) {
-                    if (lineNum <= 0) {
-                        break;
-                    }
-                    lineNum -= 1;
                     result.add(new ScheduledTask(order, lineResource, timeslot, step));
                     // 构造排程任务
                     task=taskMap.get(timeslot).get(lineResource);
@@ -160,7 +142,7 @@ public class FCFSPlanner implements Planner {
     @Override
     public List<ScheduledTask> getPlan(Timestamp currentTime) {
         ApsSolution problem = dataManager.generateStandardProblem(currentTime.toLocalDateTime());
-        scheduleInterval(problem);
+        List<ScheduledTask> res=scheduleInterval(problem).stream().map(ScheduledTask::new).collect(Collectors.toList());
         return waitForPlan();
     }
 

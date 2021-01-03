@@ -27,7 +27,8 @@ public class Product {
     private int step;
 
     public boolean isValid() {
-        if (null != availableGroupResource) { // 所需人力资源不为空
+        if (null != availableGroupResource && null != availableMachineResource && availableMachineResource.size()>0) {
+            // 所需人力资源不为空且设备也不为空
             Map<LocalTime, Integer> shiftCount = new HashMap<>();
             Shift shift;
             for (GroupResource resource : availableGroupResource) {
@@ -45,8 +46,7 @@ public class Product {
             }
             return false;
         }
-        // 人力资源为空的情况下，设备也为空则工艺路线无效
-        return null != availableMachineResource;
+        return false;
     }
 
     /**
@@ -94,5 +94,45 @@ public class Product {
             }
         }
         return false;
+    }
+
+    /**
+     * 优化现有生产安排，避免冗余资源
+     *
+     * @param groupResourceList 已安排/候选的人力资源
+     * @param machineResourceList  已安排/候选的设备资源
+     * @param product          指定的工艺路线
+     * @param production        目标产能
+     */
+    public static void optimizeArrange(List<GroupResource> groupResourceList,
+                                       List<MachineResource> machineResourceList,
+                                       Product product, int production) {
+
+        // 基于产能产量进行资源排程安排
+        int humanCapacity = (int) Math.ceil(production * 1.0 / product.getStandardCapacity()) * product.getMinimumStaff();
+        int lineNum = (int) Math.ceil(production * 1.0 / product.getStandardCapacity());
+
+
+        int tempHumanCapacity = 0;
+        int len;
+        int index;
+        for (index = 0; index < groupResourceList.size(); index++) {
+            if (tempHumanCapacity >= humanCapacity) {
+                break;
+            }
+            tempHumanCapacity += groupResourceList.get(index).getCapacity();
+        }
+        len = groupResourceList.size();
+        groupResourceList.removeAll(groupResourceList.subList(index, len));
+        for (int i = 0; i < groupResourceList.size(); i++) {
+            if (tempHumanCapacity - groupResourceList.get(i).getCapacity() >= humanCapacity) {
+                tempHumanCapacity -= groupResourceList.get(i).getCapacity();
+                groupResourceList.remove(i);
+                i--;
+            }
+        }
+
+        len = machineResourceList.size();
+        machineResourceList.removeAll(machineResourceList.subList(lineNum, len));
     }
 }

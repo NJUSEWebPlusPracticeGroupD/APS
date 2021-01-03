@@ -6,21 +6,17 @@ import com.webplusgd.aps.optaplanner.ScheduledTask;
 import com.webplusgd.aps.optaplanner.domain.Timeslot;
 import com.webplusgd.aps.service.OrderPlanFormService;
 import com.webplusgd.aps.vo.OrderPlanItem;
-import com.webplusgd.aps.vo.ResourceProduceItem;
 import com.webplusgd.aps.vo.ResponseVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Component
 public class OrderPlanFormServiceImpl implements OrderPlanFormService {
 
     @Autowired
-    FCFSPlanner fcfsPlanner ;
+    OptaPlanner planner;
 
     public ArrayList<OrderPlanItem> orderPlanItems;
     public List<ScheduledTask> plan;
@@ -31,7 +27,7 @@ public class OrderPlanFormServiceImpl implements OrderPlanFormService {
 
         //todo: 获取plan
 
-        plan = fcfsPlanner.waitForPlan();
+        plan = planner.waitForPlan();
 
         if(plan==null||plan.size()==0){
             return ResponseVO.buildFailure("还未进行排程");

@@ -4,6 +4,7 @@ import com.webplusgd.aps.optaplanner.domain.*;
 import com.webplusgd.aps.optaplanner.domain.resource.GroupResource;
 import com.webplusgd.aps.optaplanner.domain.resource.MachineResource;
 import com.webplusgd.aps.optaplanner.domain.resource.Resource;
+import com.webplusgd.aps.optaplanner.optional.OrderStrengthComparator;
 import com.webplusgd.aps.optaplanner.utils.DataUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,20 +33,7 @@ public class FCFSPlanner implements Planner {
         List<Order> orderList = new ArrayList<>(problem.getOrderList());
         orderList.remove(Order.getDefaultOrder());
 
-        orderList.sort((o1, o2) -> {
-            if (o1.getTermOfDeliver().compareTo(o2.getTermOfDeliver()) != 0) {
-                // 优先完成DDL靠前的订单
-                return o1.getTermOfDeliver().compareTo(o2.getTermOfDeliver());
-            }
-            if (o1.getOrderNum() > o2.getOrderNum()) {
-                // 优先完成数量少的订单
-                return 1;
-            }
-            if (o1.getOrderId() > o2.getOrderId()) {
-                return 1;
-            }
-            return 0;
-        });
+        orderList.sort(new OrderStrengthComparator());
 
         // 创建存储订单剩余量的数据结构
         Map<Integer, List<Integer>> restAmount = DataUtil.groupOrderAmountByOrderIdAndStep(orderList);

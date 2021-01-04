@@ -39,7 +39,7 @@ public class Order {
     }
 
     public int getRequiredPeople(){
-        return product.getMinimumStaff();
+        return product==null?0:product.getMinimumStaff();
     }
 
     public boolean equals(Order other){
@@ -51,16 +51,11 @@ public class Order {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Order order = (Order) o;
-        return orderId == order.orderId &&
-                orderNum == order.orderNum &&
-                product.equals(order.product) &&
-                termOfDeliver.equals(order.termOfDeliver) &&
-                Objects.equals(startTime, order.startTime) &&
-                Objects.equals(finishTime, order.finishTime);
+        return orderId == order.orderId;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(orderId, product, orderNum, termOfDeliver, startTime, finishTime);
+        return Objects.hash(orderId);
     }
 }

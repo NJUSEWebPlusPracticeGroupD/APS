@@ -1,6 +1,7 @@
 package com.webplusgd.aps.service.impl;
 
 import com.webplusgd.aps.optaplanner.FCFSPlanner;
+import com.webplusgd.aps.optaplanner.OptaPlanner;
 import com.webplusgd.aps.optaplanner.ScheduledTask;
 import com.webplusgd.aps.service.ResourceGanttChartService;
 import com.webplusgd.aps.utils.DateUtil;
@@ -17,16 +18,16 @@ import java.util.List;
 @Service("ResourceGanttChartService")
 public class ResourceGattChartServiceImpl implements ResourceGanttChartService {
 
-    private final FCFSPlanner fcfsPlanner;
+    private final OptaPlanner optaPlanner;
 
-    public ResourceGattChartServiceImpl(FCFSPlanner fcfsPlanner) {
-        this.fcfsPlanner = fcfsPlanner;
+    public ResourceGattChartServiceImpl(OptaPlanner optaPlanner) {
+        this.optaPlanner = optaPlanner;
     }
 
     @Override
     public ResponseVO<ArrayList<ResourceGanttItem>> getResourceGanttChart(Date date) {
         try {
-            List<ScheduledTask> scheduledTasks = fcfsPlanner.tryGetPlan();
+            List<ScheduledTask> scheduledTasks = optaPlanner.tryGetPlan();
 
             if (scheduledTasks == null) {
                 return ResponseVO.buildFailure("还未进行排程！");

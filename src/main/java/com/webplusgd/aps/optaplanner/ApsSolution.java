@@ -1,13 +1,13 @@
 package com.webplusgd.aps.optaplanner;
 
-import com.webplusgd.aps.optaplanner.domain.resource.Resource;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import com.webplusgd.aps.optaplanner.domain.Order;
 import com.webplusgd.aps.optaplanner.domain.Task;
 import com.webplusgd.aps.optaplanner.domain.Timeslot;
-import com.webplusgd.aps.optaplanner.domain.resource.GroupResource;
-import com.webplusgd.aps.optaplanner.domain.resource.MachineResource;
+import com.webplusgd.aps.optaplanner.domain.resource.Resource;
+import com.webplusgd.aps.optaplanner.score.ApsConstraintConfiguration;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.optaplanner.core.api.domain.constraintweight.ConstraintConfigurationProvider;
 import org.optaplanner.core.api.domain.solution.PlanningEntityCollectionProperty;
 import org.optaplanner.core.api.domain.solution.PlanningScore;
 import org.optaplanner.core.api.domain.solution.PlanningSolution;
@@ -26,6 +26,9 @@ import java.util.Map;
 @Data
 @NoArgsConstructor
 public class ApsSolution {
+    @ConstraintConfigurationProvider
+    private ApsConstraintConfiguration apsConstraintConfiguration;
+
     @ValueRangeProvider(id = "orderRange")
     @ProblemFactCollectionProperty
     private List<Order> orderList;
@@ -46,5 +49,10 @@ public class ApsSolution {
         this.timeslotList = timeslotList;
         this.orderMap = orderMap;
         this.taskList = taskList;
+    }
+
+    public ApsSolution withConstraintConfiguration(ApsConstraintConfiguration constraintConfiguration){
+        this.apsConstraintConfiguration=constraintConfiguration;
+        return this;
     }
 }

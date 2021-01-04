@@ -16,7 +16,7 @@ public class Resource {
     /**
      * 群组人数/机器数量，代表生产能力
      */
-    private int capacity;
+    protected int capacity;
     protected String name;
     protected Shift shift;
     protected String type=UNDEFINED_TYPE;

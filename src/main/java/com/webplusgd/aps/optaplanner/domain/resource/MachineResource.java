@@ -16,4 +16,10 @@ public class MachineResource extends Resource{
     public MachineResource(int capacity, String name, Shift shift) {
         super(capacity, name, shift, MACHINE_TYPE);
     }
+    public MachineResource(Resource resource){
+        this.name=resource.getName();
+        this.shift=resource.getShift();
+        this.type=MACHINE_TYPE;
+        this.capacity= resource.getCapacity();
+    }
 }

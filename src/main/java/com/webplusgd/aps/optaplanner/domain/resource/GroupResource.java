@@ -16,4 +16,10 @@ public class GroupResource extends Resource{
     public GroupResource(int capacity, String name, Shift shift) {
         super(capacity, name, shift, GROUP_TYPE);
     }
+    public GroupResource(Resource resource){
+        this.name=resource.getName();
+        this.shift=resource.getShift();
+        this.type=GROUP_TYPE;
+        this.capacity= resource.getCapacity();
+    }
 }

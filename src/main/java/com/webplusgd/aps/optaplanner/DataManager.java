@@ -148,7 +148,7 @@ public class DataManager {
 
     private List<Task> getInitialTask(List<Resource> resourceList,
                                       List<Timeslot> timeslotList) {
-        // 初始化排程单元(将计划单元按照时间和资源进行组织，大小为时间片数量*资源数量)
+        // 初始化排程单元(将计划单元按照时间和资源进行组织，大小为时间片数量*资源数量，仅在资源可安排的时间片内)
         List<Task> taskList = new ArrayList<>(resourceList.size() * timeslotList.size());
         com.webplusgd.aps.optaplanner.domain.Order defaultOrder = com.webplusgd.aps.optaplanner.domain.Order.getDefaultOrder();
         Task task;
@@ -157,7 +157,7 @@ public class DataManager {
                 if (Shift.shiftTimeslotConflict(resource.getShift(), timeslot)) {
                     continue;
                 }
-                task = new Task(defaultOrder, resource, timeslot);
+                task = new Task(null, resource, timeslot);
                 taskList.add(task);
             }
         }

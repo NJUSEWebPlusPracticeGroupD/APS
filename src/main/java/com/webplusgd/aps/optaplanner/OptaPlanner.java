@@ -2,11 +2,11 @@ package com.webplusgd.aps.optaplanner;
 
 import com.webplusgd.aps.optaplanner.domain.Order;
 import com.webplusgd.aps.optaplanner.domain.Task;
-import com.webplusgd.aps.optaplanner.domain.Timeslot;
-import com.webplusgd.aps.optaplanner.score.ApsScoreCalculator;
+import com.webplusgd.aps.optaplanner.score.ApsConstraintConfiguration;
 import com.webplusgd.aps.optaplanner.utils.DataUtil;
 import com.webplusgd.aps.utils.DateUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore;
 import org.optaplanner.core.api.solver.SolverJob;
 import org.optaplanner.core.api.solver.SolverManager;
 import org.optaplanner.core.api.solver.SolverStatus;
@@ -40,8 +40,8 @@ public class OptaPlanner implements Planner {
     private LocalDateTime currentScheduleTime;
     private ApsSolution problem;
     private ApsSolution solution;
-    private static final Integer HOUR_UNIT_FOR_BL=1;
-    private static final Integer DEFAULT_STEP=1;
+    private static final Integer HOUR_UNIT_FOR_BL = 1;
+    private static final Integer DEFAULT_STEP = 1;
 
     @PostConstruct
     public void init() throws IOException {
@@ -87,8 +87,9 @@ public class OptaPlanner implements Planner {
     @Override
     public void startSchedule(LocalDateTime currentTime) {
         currentScheduleTime = currentTime;
-        log.info("当前系统时间（排程启动时间）设置为：{}",currentTime);
+        log.info("当前系统时间（排程启动时间）设置为：{}", currentTime);
         problem = dataManager.generateStandardProblem(currentScheduleTime);
+        problem.withConstraintConfiguration(new ApsConstraintConfiguration());
         log.info("加载问题集");
         scheduleInternal(problem);
     }
@@ -133,7 +134,7 @@ public class OptaPlanner implements Planner {
      * @return 排程计划
      */
     private List<ScheduledTask> createPlanFromSolution(ApsSolution solution) {
-        List<Task> result= DataUtil.toResult(solution.getTaskList());
+        List<Task> result = DataUtil.toResult(solution.getTaskList());
         Task task;
         Order order;
         for (int i = result.size() - 1; i >= 0; i--) {

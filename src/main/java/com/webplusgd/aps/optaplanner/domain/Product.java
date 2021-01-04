@@ -2,14 +2,17 @@ package com.webplusgd.aps.optaplanner.domain;
 
 import com.webplusgd.aps.optaplanner.domain.resource.GroupResource;
 import com.webplusgd.aps.optaplanner.domain.resource.MachineResource;
+import com.webplusgd.aps.optaplanner.domain.resource.Resource;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalTime;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author Rollingegg
@@ -94,6 +97,12 @@ public class Product {
             }
         }
         return false;
+    }
+
+    public static boolean isRedundantArrange(List<Resource> resourceList, Product product){
+        List<GroupResource> groupResourceList=resourceList.stream().filter(resource -> Resource.GROUP_TYPE.equals(resource.getType())).map(GroupResource::new).collect(Collectors.toList());
+        List<MachineResource> machineResourceList=resourceList.stream().filter(resource -> Resource.MACHINE_TYPE.equals(resource.getType())).map(MachineResource::new).collect(Collectors.toList());
+        return isRedundantArrange(groupResourceList,machineResourceList,product);
     }
 
     /**

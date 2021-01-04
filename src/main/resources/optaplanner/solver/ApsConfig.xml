@@ -17,8 +17,8 @@
     <entityClass>com.webplusgd.aps.optaplanner.domain.Task</entityClass>
 
     <scoreDirectorFactory>
-<!--        <constraintProviderClass>com.webplusgd.aps.optaplanner.score.ApsConstraintProvider</constraintProviderClass>-->
-        <easyScoreCalculatorClass>com.webplusgd.aps.optaplanner.score.ApsScoreCalculator</easyScoreCalculatorClass>
+        <constraintProviderClass>com.webplusgd.aps.optaplanner.score.ApsConstraintProvider</constraintProviderClass>
+<!--        <easyScoreCalculatorClass>com.webplusgd.aps.ApsScoreCalculator</easyScoreCalculatorClass>-->
     </scoreDirectorFactory>
 
     <termination>
